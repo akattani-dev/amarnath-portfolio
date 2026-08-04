@@ -11,7 +11,7 @@ export function Contact() {
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-14">
         <div>
-          <p className="max-w-xl leading-[1.7] text-foreground/85">{contact.lead}</p>
+          <p className="max-w-[34ch] leading-[1.7] text-foreground/85">{contact.lead}</p>
           <Button
             asChild
             className="mt-6 h-11 rounded-md px-5 text-sm transition-colors duration-150"

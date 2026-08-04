@@ -24,7 +24,7 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
           <h3 className="font-display text-lg tracking-tight text-foreground transition-colors duration-150 group-hover:text-brand sm:text-xl">
             {project.title}
           </h3>
-          <p className="mt-2 max-w-3xl text-[0.95rem] leading-[1.6] text-foreground/80">
+          <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-[1.6] text-foreground/80">
             {project.summary}
           </p>
           <div className="mt-3.5 flex flex-wrap gap-1.5">

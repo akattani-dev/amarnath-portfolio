@@ -1,75 +1,95 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import PixelTransition from "@/components/PixelTransition";
+import { FadeIn } from "@/components/motion/fade-in";
+import { ScaleUnblur } from "@/components/motion/scale-unblur";
 import { Button } from "@/components/ui/button";
 import { hero, site } from "@/content/site";
+import { cn } from "@/lib/utils";
+
+const PORTRAIT_SIZES = "(min-width: 1024px) 420px, (min-width: 640px) 360px, 80vw";
+
+function Portrait({ grayscale = false }: { grayscale?: boolean }) {
+  return (
+    <Image
+      src="/images/hero.jpg"
+      alt={`Portrait of ${site.name}`}
+      fill
+      // Both layers resolve to one optimised URL, so the colour copy is a cache
+      // hit and the swap has nothing to wait for.
+      {...(grayscale ? { priority: true } : { loading: "eager" as const })}
+      sizes={PORTRAIT_SIZES}
+      className={cn("object-cover object-[50%_18%]", grayscale && "grayscale")}
+    />
+  );
+}
 
 export function Hero() {
   return (
-    <section className="grain relative isolate flex min-h-[78svh] flex-col justify-end overflow-hidden bg-ink">
-      <div className="absolute inset-x-0 top-0 h-[64%] [mask-image:linear-gradient(to_bottom,black_52%,transparent_97%)] md:inset-y-0 md:left-[30%] md:h-auto md:[mask-image:linear-gradient(to_right,transparent_2%,black_50%)]">
-        <Image
-          src="/images/hero.jpg"
-          alt={`Illustrated portrait of ${site.name}`}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[50%_16%] opacity-90 md:object-[50%_28%]"
-        />
-      </div>
-
+    <section className="relative isolate overflow-hidden">
       <div
         aria-hidden
-        className="absolute inset-0 bg-[linear-gradient(to_top,var(--ink)_38%,color-mix(in_oklab,var(--ink),transparent_14%)_62%,color-mix(in_oklab,var(--ink),transparent_52%)_100%)] md:bg-[linear-gradient(to_right,var(--ink)_30%,color-mix(in_oklab,var(--ink),transparent_12%)_54%,color-mix(in_oklab,var(--ink),transparent_62%)_100%)]"
+        className="dot-grid pointer-events-none absolute inset-0 -z-10"
       />
 
-      <div
-        aria-hidden
-        className="absolute inset-x-0 bottom-0 h-44 bg-[linear-gradient(to_top,var(--ink)_18%,transparent)]"
-      />
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-6 pt-28 pb-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:gap-16 lg:px-10 lg:pt-36 lg:pb-24">
+        <FadeIn>
+          <div className="flex items-center gap-3">
+            <span className="h-px w-8 bg-brand" />
+            <span className="text-xs tracking-[0.22em] text-muted-foreground uppercase">
+              {hero.eyebrow}
+            </span>
+          </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-32 pb-14 lg:px-10 lg:pt-36 lg:pb-20">
-        <div className="flex items-center gap-3">
-          <span className="h-px w-8 bg-brand-bright" />
-          <span className="text-xs tracking-[0.22em] text-mist/60 uppercase">
-            {hero.eyebrow}
-          </span>
-        </div>
+          <h1 className="mt-5 max-w-[16ch] font-display text-[clamp(2.4rem,6.2vw,4.25rem)] leading-[0.98] font-semibold tracking-[-0.03em] text-balance text-foreground">
+            {site.name}
+          </h1>
 
-        <h1 className="mt-5 font-display text-[clamp(2.6rem,7.5vw,5.75rem)] leading-[0.95] font-semibold tracking-[-0.03em] text-mist">
-          {site.name}
-        </h1>
+          <p className="mt-5 max-w-[30ch] font-display text-base tracking-tight text-balance text-brand sm:text-lg">
+            {hero.headline}
+          </p>
 
-        <p className="mt-5 max-w-xl font-display text-base tracking-tight text-brand-bright sm:text-lg">
-          {hero.headline}
-        </p>
+          <p className="mt-4 max-w-[34ch] text-[0.98rem] leading-relaxed text-foreground/65">
+            {hero.supporting}
+          </p>
 
-        <p className="mt-4 max-w-xl text-[0.98rem] leading-relaxed text-mist/70">
-          {hero.supporting}
-        </p>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Button asChild className="h-11 rounded-md px-5">
+              <Link href={hero.ctas[0].href}>{hero.ctas[0].label}</Link>
+            </Button>
+            <Button asChild variant="outline" className="h-11 rounded-md px-5">
+              <Link href={hero.ctas[1].href}>{hero.ctas[1].label}</Link>
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              className="h-11 rounded-md px-3 text-muted-foreground hover:text-brand"
+            >
+              <Link href={hero.ctas[2].href}>{hero.ctas[2].label}</Link>
+            </Button>
+          </div>
+        </FadeIn>
 
-        <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Button
-            asChild
-            className="h-11 rounded-md bg-mist px-5 text-sm text-ink transition-colors duration-150 hover:bg-white"
-          >
-            <Link href={hero.ctas[0].href}>{hero.ctas[0].label}</Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="h-11 rounded-md border-mist/25 bg-transparent px-5 text-sm text-mist transition-colors duration-150 hover:bg-white/10 hover:text-mist"
-          >
-            <Link href={hero.ctas[1].href}>{hero.ctas[1].label}</Link>
-          </Button>
-          <Button
-            asChild
-            variant="ghost"
-            className="h-11 px-3 text-sm text-mist/70 transition-colors duration-150 hover:bg-transparent hover:text-brand-bright"
-          >
-            <Link href={hero.ctas[2].href}>{hero.ctas[2].label}</Link>
-          </Button>
-        </div>
+        <ScaleUnblur
+          delay={0.1}
+          className="mx-auto w-full max-w-[420px] lg:mr-0 lg:ml-auto"
+        >
+          <div className="portrait-frame w-full rounded-4xl border border-foreground/10 p-1.5">
+            <div className="overflow-hidden rounded-[1.6rem]">
+              <PixelTransition
+                className="w-full rounded-[1.6rem]"
+                aspectRatio="100%"
+                gridSize={9}
+                animationStepDuration={0.35}
+                // A raw token so the dissolve inverts with the theme.
+                pixelColor="var(--foreground)"
+                firstContent={<Portrait grayscale />}
+                secondContent={<Portrait />}
+              />
+            </div>
+          </div>
+        </ScaleUnblur>
       </div>
     </section>
   );

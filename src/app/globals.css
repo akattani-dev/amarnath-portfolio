@@ -271,3 +271,139 @@
   --sh-sign: #8996a3;
   --sh-comment: #8b8b8b;
 }
+
+/* ---------------------------------------------------------------------------
+   MOTION PRIMITIVES
+   FadeIn and ScaleUnblur ship their entrance state as an inline style, so the
+   content is invisible in the server markup until motion takes over on the
+   client. These rules put it back whenever the animation is never going to
+   run — reduced motion, or no scripting at all — which is the failure mode
+   that made React Bits' own AnimatedContent unusable. `!important` is what
+   lets an author rule outrank motion's inline style.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  [data-motion-primitive] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+}
+
+@media (scripting: none) {
+  [data-motion-primitive] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   HERO DOT FIELD
+   The static stand-in for a WebGL backdrop: no canvas, no second colour
+   config, and it follows the theme because the dot is mixed from --foreground.
+   --------------------------------------------------------------------------- */
+.dot-grid {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--foreground), transparent 90%) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    black 25%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    black 25%,
+    transparent 78%
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   PORTRAIT FRAME
+   Outer card of the double-nested frame. The inner radius is clipped in
+   markup so the image corners stay crisp against this one.
+   --------------------------------------------------------------------------- */
+.portrait-frame {
+  background: color-mix(in oklab, var(--foreground), transparent 97%);
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--foreground), transparent 92%),
+    0 12px 32px -12px color-mix(in oklab, var(--foreground), transparent 82%);
+}
+
+/* ---------------------------------------------------------------------------
+   CARD HOVER
+   CSS-only: 4px lift, two-tier shadow and a 1.06 media push, all on the same
+   curve as the motion primitives. Apply .project-card to the card root; any
+   nested img, or an element marked .project-card__media, takes the zoom.
+   --------------------------------------------------------------------------- */
+.project-card {
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 2px 4px color-mix(in oklab, var(--foreground), transparent 92%),
+    0 18px 40px -16px color-mix(in oklab, var(--foreground), transparent 78%);
+}
+
+.project-card :is(img, .project-card__media) {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project-card:hover :is(img, .project-card__media) {
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-card,
+  .project-card :is(img, .project-card__media) {
+    transition: none;
+  }
+
+  .project-card:hover,
+  .project-card:hover :is(img, .project-card__media) {
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   THEME REVEAL
+   Cross-fades the document across a theme swap instead of cutting. Inert until
+   something calls document.startViewTransition around the next-themes
+   setTheme call — nothing does yet, so this is staged, not live.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.4s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(root) {
+    animation-name: theme-reveal-out;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: theme-reveal-in;
+  }
+}
+
+@keyframes theme-reveal-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes theme-reveal-in {
+  from {
+    opacity: 0;
+  }
+}

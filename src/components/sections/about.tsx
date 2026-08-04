@@ -1,15 +1,24 @@
 import Link from "next/link";
 
 import { SectionHeading } from "@/components/section-heading";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { about } from "@/content/site";
 
+const VISIBLE_CERTIFICATIONS = 4;
+
+const CHIP = "rounded-md px-2 py-0.5 text-[0.7rem] font-normal text-muted-foreground";
+
 export function About() {
+  const shown = about.certifications.slice(0, VISIBLE_CERTIFICATIONS);
+  const overflow = about.certifications.slice(VISIBLE_CERTIFICATIONS);
+
   return (
     <section id="about" className="scroll-mt-20">
       <SectionHeading index="01" label="About" title={about.title} />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-14">
-        <div className="space-y-4">
+        <div className="max-w-[46ch] space-y-4">
           {about.paragraphs.map((paragraph) => (
             <p
               key={paragraph.slice(0, 32)}
@@ -30,25 +39,44 @@ export function About() {
           </p>
         </div>
 
-        <dl className="divide-y divide-border border-y border-border self-start">
-          {about.lists.map((list) => (
-            <div key={list.title} className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-4 py-3.5">
-              <dt className="pt-px text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
-                {list.title}
-              </dt>
-              <dd className="space-y-1">
-                {list.items.map((entry) => (
-                  <p
-                    key={entry}
-                    className="text-[0.8125rem] leading-[1.45] text-foreground/85"
+        <div className="space-y-5 self-start">
+          <div>
+            <h3 className="text-[0.6875rem] tracking-[0.14em] text-muted-foreground uppercase">
+              Certifications
+            </h3>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {shown.map((certification) => (
+                <Badge key={certification} variant="outline" className={CHIP}>
+                  {certification}
+                </Badge>
+              ))}
+              {overflow.length > 0 && (
+                <>
+                  <Badge
+                    aria-hidden
+                    variant="outline"
+                    title={overflow.join(" · ")}
+                    className={`${CHIP} border-dashed`}
                   >
-                    {entry}
-                  </p>
-                ))}
-              </dd>
+                    +{overflow.length}
+                  </Badge>
+                  {/* The counter is the visual treatment; the names still ship in the markup. */}
+                  <span className="sr-only">{overflow.join(", ")}</span>
+                </>
+              )}
             </div>
-          ))}
-        </dl>
+          </div>
+
+          <Separator />
+
+          <div className="flex flex-wrap gap-1.5">
+            {about.chips.map((chip) => (
+              <Badge key={chip} variant="outline" className={CHIP}>
+                {chip}
+              </Badge>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

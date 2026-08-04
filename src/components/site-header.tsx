@@ -22,8 +22,10 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // The hero paints on the fixed dark canvas, so above the fold the header
-  // reads against ink regardless of the active theme.
+  // Only the chrome changes above the fold — no bar, no border, no blur, so
+  // the hero's dot grid runs uninterrupted to the top of the viewport. Text
+  // stays on the theme tokens: the hero is theme-aware now, so a fixed light
+  // treatment here would put near-white links on white in the light theme.
   const overHero = pathname === "/" && !scrolled;
 
   useEffect(() => {
@@ -45,12 +47,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6 lg:px-10">
         <Link
           href="/"
-          className={cn(
-            "font-display text-base tracking-tight transition-colors duration-150",
-            overHero
-              ? "text-mist hover:text-brand-bright"
-              : "text-foreground hover:text-brand"
-          )}
+          className="font-display text-base tracking-tight text-foreground transition-colors duration-150 hover:text-brand"
         >
           {site.name}
         </Link>
@@ -61,35 +58,19 @@ export function SiteHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={cn(
-                  "text-sm transition-colors duration-150",
-                  overHero
-                    ? "text-mist/75 hover:text-mist"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
+                className="text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground"
               >
                 {item.label}
               </Link>
             ))}
           </nav>
 
-          <ThemeToggle
-            className={cn(
-              overHero
-                ? "text-mist/80 hover:bg-white/10 hover:text-mist"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
-          />
+          <ThemeToggle className="text-muted-foreground hover:bg-muted hover:text-foreground" />
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
               aria-label="Open menu"
-              className={cn(
-                "inline-flex size-9 items-center justify-center rounded-md transition-colors duration-150 md:hidden",
-                overHero
-                  ? "text-mist hover:bg-white/10"
-                  : "text-foreground hover:bg-muted"
-              )}
+              className="inline-flex size-9 items-center justify-center rounded-md text-foreground transition-colors duration-150 hover:bg-muted md:hidden"
             >
               <Menu className="size-5" />
             </SheetTrigger>
