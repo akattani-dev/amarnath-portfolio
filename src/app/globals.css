@@ -1,0 +1,155 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-heading: var(--font-display);
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-line: var(--ink-line);
+  --color-mist: var(--mist);
+  --color-mist-2: var(--mist-2);
+  --color-brand: var(--brand);
+  --color-brand-bright: var(--brand-bright);
+  --color-brand-soft: var(--brand-soft);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --ink: #101619;
+  --ink-2: #192226;
+  --ink-line: #2a3539;
+  --mist: #f4f6f5;
+  --mist-2: #e8edeb;
+  --brand: #0b7a70;
+  --brand-bright: #45c3b5;
+  --brand-soft: #e2f0ed;
+
+  --background: var(--mist);
+  --foreground: #16211f;
+  --card: #ffffff;
+  --card-foreground: #16211f;
+  --popover: #ffffff;
+  --popover-foreground: #16211f;
+  --primary: var(--ink);
+  --primary-foreground: #f7faf9;
+  --secondary: var(--mist-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--mist-2);
+  --muted-foreground: #5a6a6c;
+  --accent: var(--brand-soft);
+  --accent-foreground: #0a5f58;
+  --destructive: #b4402f;
+  --border: #dce3e1;
+  --input: #dce3e1;
+  --ring: var(--brand);
+  --radius: 0.35rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/40;
+  }
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  ::selection {
+    background: var(--brand);
+    color: #ffffff;
+  }
+}
+
+/* Scroll reveals ship with an inline opacity:0 from Framer Motion, so without a
+   script to run the animation the section content would never appear. */
+@media (scripting: none) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Cool paper tooth over flat colour fields. Host element must be positioned. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+.prose-ink {
+  --tw-prose-body: #2a3639;
+  --tw-prose-headings: #101619;
+  --tw-prose-lead: #46565a;
+  --tw-prose-links: #0b7a70;
+  --tw-prose-bold: #101619;
+  --tw-prose-counters: #6b7b7e;
+  --tw-prose-bullets: #c3d0ce;
+  --tw-prose-hr: #dce3e1;
+  --tw-prose-quotes: #101619;
+  --tw-prose-quote-borders: #0b7a70;
+  --tw-prose-captions: #6b7b7e;
+  --tw-prose-code: #101619;
+  --tw-prose-pre-code: #dde7e5;
+  --tw-prose-pre-bg: #101619;
+  --tw-prose-th-borders: #c9d4d2;
+  --tw-prose-td-borders: #e2e8e6;
+}
+
+.prose-ink :is(h2, h3, h4) {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+.prose-ink :is(h2) {
+  margin-top: 2.4em;
+}
+
+.prose-ink blockquote {
+  font-style: normal;
+  padding-inline-start: 1.25em;
+}
+
+.prose-ink a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}

@@ -1,0 +1,64 @@
+---
+title: "Integration Architecture Is Becoming Agent Architecture"
+description: "A governed API estate is already a tool catalogue. The work now is deciding which of those tools an agent is allowed to hold."
+date: "2026-07-28"
+category: "Integration Architecture"
+published: true
+---
+
+If you have spent years building an API-led estate, you have already done most
+of the work that agentic AI requires. You just built it for a different consumer.
+
+A well-run integration layer gives you discoverable interfaces, contracts,
+authentication, rate limits, logging and a change process. Swap the consumer
+from "a mobile app team" to "a model deciding what to call next" and the
+architecture barely moves. What moves is the *governance question*.
+
+## The catalogue was always the point
+
+System APIs, process APIs, experience APIs — the layering exists so that
+capability is reusable and the underlying systems stay protected. That is
+exactly the shape a tool catalogue needs.
+
+The Model Context Protocol makes this concrete. An MCP server is, in practice, a
+curated projection of your estate: a subset of operations, described well enough
+that a model can choose between them, with the dangerous ones marked.
+
+The design work is not plumbing. It is curation:
+
+- Which operations belong in the projection at all?
+- Which are read-only, and which mutate state?
+- What must be pre-checked before a mutation is even proposed?
+- Where does a human approve, and what are they shown when they do?
+
+## Descriptions are now interface design
+
+This is the part that surprises integration teams. For a human developer, a
+mediocre API description is an annoyance — they will read the code or ask
+someone. For a model, the description *is* the interface. An ambiguous parameter
+name is not a documentation debt item; it is a runtime failure mode.
+
+I have spent more time rewriting tool descriptions than writing tool logic. That
+ratio feels wrong until you notice it is the same ratio as naming things well in
+any codebase, just with a much less forgiving reader.
+
+## Two failure modes to design against
+
+**Over-exposure.** The temptation is to expose everything, because you can. An
+estate with four hundred operations does not become four hundred tools. It
+becomes a handful of well-chosen ones, and the rest stay behind a workflow that
+knows the order.
+
+**Silent composition.** Agents chain calls. Two individually safe operations can
+be unsafe in sequence, and neither service owner will have modelled that. This
+is the same problem distributed systems always had — it just arrives faster now,
+and without a design review.
+
+## What I would tell an integration team starting out
+
+Start from the estate you already govern. Project a small, deliberate subset of
+it. Make the descriptions better than you think they need to be. Put approval
+gates on state changes, and make the approval show the exact call, not a summary.
+
+Then treat the tool catalogue as an architectural artefact with an owner — the
+same way you treat the API catalogue. Because that is what it is.

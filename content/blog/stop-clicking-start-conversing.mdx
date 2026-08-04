@@ -1,0 +1,66 @@
+---
+title: "Stop Clicking, Start Conversing"
+description: "Most platform work is still a console and a runbook. The interesting shift is not that an agent can click faster — it is that the runbook finally becomes executable."
+date: "2026-07-14"
+category: "AI Agents & Automation"
+published: true
+---
+
+Every enterprise platform I have worked on has the same hidden layer: a set of
+runbooks. Create the private space. Check the CIDR does not overlap. Confirm the
+environment exists. Attach the transit gateway. Wait for the status to flip.
+
+None of that lives in the platform. It lives in a Confluence page, a senior
+engineer's head, and the muscle memory of whoever did it last quarter.
+
+## The console is the bottleneck, not the API
+
+The APIs have been there for years. What has not existed is anything that knows
+the *order*, the *pre-checks*, and the *point at which a human should be asked*.
+So we kept a person in the loop for the whole sequence — not because judgement
+was needed at every step, but because there was nowhere else to put the
+knowledge.
+
+That is the part agents actually change. Not speed. Sequencing.
+
+## What a good platform agent looks like
+
+The version that works in a real enterprise is boring on purpose:
+
+1. **Route the request** to a domain — networking, access management, lifecycle.
+2. **Collect inputs one at a time**, validated against real constraints.
+3. **Run read-only pre-checks** before proposing anything.
+4. **Show a dry run** — the exact call, the exact arguments.
+5. **Pause for explicit approval** on anything destructive.
+6. **Execute**, then verify.
+
+Notice how little of that is model work. The model reasons; deterministic
+guidance supplies the steps, the constraints and the approval gates. When people
+say agents are unreliable in production, they usually mean they handed the model
+the whole workflow and hoped.
+
+> The guidance layer is what makes the agent auditable. The model is what makes
+> it usable.
+
+## Where it gets uncomfortable
+
+Two things break the illusion quickly.
+
+The first is **blast radius**. A human clicking through a console is slow, and
+slowness is an accidental safety feature. Remove it and you need real gates —
+not a confirmation dialog the agent can answer itself.
+
+The second is **observability**. If an agent performs six platform calls to
+satisfy one request, the audit trail has to reconstruct intent, not just the
+calls. "Who deleted this?" becomes "what were they trying to do, and what did
+they approve?"
+
+## The honest summary
+
+Conversational platform operations are not about replacing the console. They are
+about finally writing the runbook down in a form that can be executed, checked
+and reviewed — with a human at the two or three points where a human genuinely
+matters.
+
+That is a smaller claim than most agent demos make. It is also the one that
+survives contact with an enterprise change process.
