@@ -23,18 +23,10 @@ export function Work() {
               delay={Math.min(index, 3) * 0.05}
               className="group border-b border-border"
             >
-              <article className="grid gap-4 py-9 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-12">
-                <div className="flex items-baseline gap-4 lg:flex-col lg:items-start lg:gap-2">
-                  <span className="font-mono text-xs text-brand">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="text-xs tracking-[0.14em] text-muted-foreground uppercase">
-                    {project.period}
-                  </span>
-                  <span className="text-sm text-muted-foreground lg:mt-1">
-                    {project.role}
-                  </span>
-                </div>
+              <article className="grid gap-3 py-9 lg:grid-cols-[minmax(0,5rem)_minmax(0,1fr)] lg:gap-12">
+                <span className="font-mono text-xs text-brand lg:pt-1.5">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
 
                 <div>
                   <h3 className="font-display text-xl tracking-tight text-ink transition-colors group-hover:text-brand sm:text-2xl">

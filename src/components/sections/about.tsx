@@ -37,11 +37,14 @@ export function About() {
           <Reveal delay={0.1}>
             <dl className="divide-y divide-border border-y border-border">
               {about.lists.map((list) => (
-                <div key={list.title} className="grid grid-cols-3 gap-4 py-5">
+                <div
+                  key={list.title}
+                  className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-5 py-5"
+                >
                   <dt className="text-xs tracking-[0.14em] text-muted-foreground uppercase">
                     {list.title}
                   </dt>
-                  <dd className="col-span-2 space-y-1.5">
+                  <dd className="space-y-1.5">
                     {list.items.map((entry) => (
                       <p key={entry} className="text-sm leading-snug text-foreground/85">
                         {entry}

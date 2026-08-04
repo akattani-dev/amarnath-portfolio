@@ -19,29 +19,16 @@ export function Experience() {
               delay={index * 0.05}
               className="border-b border-border"
             >
-              <div className="grid gap-4 py-9 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-12">
-                <div className="space-y-1">
-                  <p className="text-sm text-ink">{role.period}</p>
-                  <p className="text-xs tracking-[0.14em] text-muted-foreground uppercase">
-                    {role.location}
-                  </p>
-                </div>
+              <div className="grid gap-2 py-8 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:items-baseline lg:gap-12">
+                <p className="text-sm tracking-[0.06em] text-muted-foreground">
+                  {role.period}
+                </p>
 
                 <div>
                   <h3 className="font-display text-xl tracking-tight text-ink sm:text-2xl">
                     {role.company}
                   </h3>
                   <p className="mt-1 text-sm text-brand">{role.title}</p>
-                  <ul className="mt-4 space-y-2">
-                    {role.highlights.map((highlight) => (
-                      <li
-                        key={highlight}
-                        className="relative max-w-2xl pl-5 leading-[1.7] text-foreground/80 before:absolute before:top-[0.7em] before:left-0 before:h-px before:w-2.5 before:bg-border"
-                      >
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
             </Reveal>
@@ -54,10 +41,15 @@ export function Experience() {
           </p>
           <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-0">
             {education.map((entry, index) => (
-              <div key={entry.institution} className="flex items-center">
+              <div key={entry.credential} className="flex items-center">
                 <div>
-                  <p className="text-ink">{entry.institution}</p>
-                  <p className="text-sm text-muted-foreground">{entry.credential}</p>
+                  <p className="text-ink">
+                    {entry.credential}
+                    {entry.period && (
+                      <span className="text-muted-foreground"> · {entry.period}</span>
+                    )}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{entry.institution}</p>
                 </div>
                 {index < education.length - 1 && (
                   <Separator

@@ -11,8 +11,6 @@ export type SocialLink = {
 
 export type Project = {
   title: string;
-  role: string;
-  period: string;
   summary: string;
   tags: string[];
   href?: string;
@@ -22,13 +20,12 @@ export type Role = {
   company: string;
   title: string;
   period: string;
-  location: string;
-  highlights: string[];
 };
 
 export type Education = {
   institution: string;
   credential: string;
+  period?: string;
 };
 
 export const site = {
@@ -75,9 +72,9 @@ export const hero = {
 export const about = {
   title: "Enterprise integration, and what agents are doing to it",
   paragraphs: [
-    "I am a Senior Technical Consultant at Salesforce, in the Global Delivery Centre for MuleSoft, currently embedded with Heineken. My day job is enterprise integration: the APIs, event flows and platform plumbing that hold a large organisation together.",
-    "The part I find most interesting right now is what happens when agents get access to that plumbing. A well-governed integration estate is, functionally, a catalogue of tools an agent can call — which turns integration architecture into agent architecture. Most of my recent work sits on that line: MCP servers, IDE agents, and agent fabrics that keep approvals and observability intact.",
-    "Before Salesforce I spent close to three years at Deloitte and four at Accenture, mostly on integration and platform engineering for large enterprises.",
+    "I am a Senior Technical Consultant at Salesforce, in the Global Delivery Centre for MuleSoft, currently embedded with Heineken. That is nine-plus years into a career spent on integration architecture — the APIs, event flows and platform plumbing that hold a large organisation together.",
+    "Much of that work has been multi-cloud: integrating Salesforce, SAP and ServiceNow, and putting delivery on rails with CI/CD through Azure DevOps and Jenkins, which cut manual effort by around 40%. Across those engagements I have held a 5/5 CSAT with zero escalations.",
+    "The part I find most interesting right now is what happens when agents get access to that plumbing. A well-governed integration estate is, functionally, a catalogue of tools an agent can call — which turns integration architecture into agent architecture. Most of my recent work sits on that line: agent fabrics, MCP servers and IDE tooling.",
   ],
   writingNote: {
     prefix:
@@ -92,28 +89,37 @@ export const about = {
         "Enterprise integration architecture",
         "Agentic AI & Model Context Protocol",
         "Developer experience tooling",
-        "Platform engineering & governance",
+        "Multi-cloud integration",
       ],
     },
     {
       title: "Certifications",
       items: [
-        "MuleSoft Certified Integration Architect",
-        "MuleSoft Certified Developer",
-        "Salesforce Certified AI Associate",
+        "MuleSoft Certified Developer – Level 1 (MCD-L1)",
+        "MuleSoft Certified Developer – Level 2 (MCD-L2)",
+        "MuleSoft Certified Integration Architect (MCIA)",
+        "MuleSoft Certified Platform Architect (MCPA)",
+        "MuleSoft Integration Associate (MIA)",
+        "Salesforce AI Associate",
+        "Microsoft Azure Fundamentals (AZ-900)",
+        "API Academy Certified – API Designer, Product Manager & Security Architect",
       ],
     },
     {
       title: "Community",
       items: [
-        "Internal enablement & speaking",
-        "Hackathons and internal demos",
+        "MuleSoft Ambassador programme",
+        "TrailGuide mentoring",
         "Writing at akattani.com/blog",
       ],
     },
     {
+      title: "Recognition",
+      items: ["Innovation Gladiator (Dot of Fame)", "Trailhead Triple Star Ranger"],
+    },
+    {
       title: "Languages",
-      items: ["English", "Hindi", "Kannada"],
+      items: ["English", "Kannada", "Hindi"],
     },
   ],
 } as const;
@@ -121,105 +127,76 @@ export const about = {
 export const projects: Project[] = [
   {
     title: "Heineken Agent Fabric Network",
-    role: "Integration Architect",
-    period: "2025",
     summary:
-      "An agent fabric that lets AI agents discover and invoke a governed catalogue of enterprise integrations. The interesting problem was not calling the APIs — it was keeping approvals, observability and blast-radius controls intact once a non-human caller is on the other end.",
-    tags: ["Agentic AI", "MuleSoft", "MCP", "Enterprise Architecture"],
+      "An agent fabric network built on the Heineken engagement, connecting enterprise integrations to AI agents.",
+    tags: ["Agent Fabric", "MuleSoft", "Agentic AI"],
   },
   {
     title: "TrailBrewer",
-    role: "Hackathon — 1st place of 9 teams",
-    period: "2025",
     summary:
-      "Built for an internal hackathon and placed first out of nine teams. Turns scattered enablement material into a guided, conversational path so people can ask for what they need instead of hunting through a content library.",
-    tags: ["Hackathon", "Agentforce", "Enablement"],
+      "An agentic AI solution built with MuleSoft Agent Fabric, Omni Gateway, A2A and MCP, enabling natural-language operation of the Anypoint Platform. It won 1st place among nine teams, and the win led to an invitation to present to Heineken's CTO and EMEA North Professional Services leadership.",
+    tags: ["Agent Fabric", "Omni Gateway", "A2A", "MCP", "Anypoint Platform"],
   },
   {
     title: "Anypoint MCP Server",
-    role: "Proof of concept",
-    period: "2025",
     summary:
-      "Exposes Anypoint Platform operations as Model Context Protocol tools, so an agent can plan, pre-check and execute platform actions — private spaces, environments, deployments — with a dry run and an explicit human approval before anything destructive runs.",
+      "A proof of concept exposing Anypoint Platform operations as Model Context Protocol tools.",
     tags: ["MCP", "Anypoint Platform", "Agentic AI"],
   },
   {
     title: "Anypoint Studio Claude plugin",
-    role: "Developer tooling",
-    period: "2025",
-    summary:
-      "Puts an AI pair-programmer inside the IDE developers already live in. Generates and reviews Mule flows, DataWeave and tests against the project in front of you, rather than in a browser tab that has no idea what your project looks like.",
-    tags: ["Developer Tools", "Anypoint Studio", "LLM"],
+    summary: "A Claude plugin for Anypoint Studio, bringing an AI assistant into the IDE.",
+    tags: ["Anypoint Studio", "Developer Tools", "Claude"],
   },
   {
-    title: "Platform Vertex Agent — VS Code extension",
-    role: "Creator",
-    period: "2025",
-    summary:
-      "A guided expert for Anypoint Platform setup: networking, access management, application lifecycle and deployment troubleshooting. Deterministic guidance routes the request, the model does the reasoning, and destructive actions pause for approval.",
-    tags: ["VS Code", "Developer Experience", "Agentic AI"],
+    title: "Platform Vertex Agent",
+    summary: "A VS Code extension for working with the Anypoint Platform.",
+    tags: ["VS Code", "Anypoint Platform", "Developer Tools"],
   },
   {
-    title: "Key Vault connector + certificate-rotation MCP",
-    role: "Integration & security tooling",
-    period: "2024–2025",
+    title: "Azure Key Vault connector + certificate-rotation MCP",
     summary:
-      "A MuleSoft connector for Azure Key Vault, paired with an MCP surface for TLS certificate rotation. Replaced a manual, calendar-driven renewal ritual with a repeatable and auditable flow across private spaces and gateway consumers.",
-    tags: ["MuleSoft", "Azure", "Security", "Automation"],
+      "A MuleSoft connector for Azure Key Vault, paired with an MCP server for certificate rotation.",
+    tags: ["MuleSoft", "Azure Key Vault", "MCP", "Security"],
   },
   {
-    title: "Solace event-flow remediation",
-    role: "Integration Architect",
-    period: "2024",
-    summary:
-      "Diagnosed and resolved a Solace messaging failure that was stalling production event flow, then closed the gap in monitoring that let it go unnoticed for as long as it did.",
-    tags: ["Event-Driven", "Solace", "Production Support"],
+    title: "Solace messaging fix",
+    summary: "Diagnosed and resolved a Solace messaging failure affecting event flow.",
+    tags: ["Solace", "Event-Driven"],
   },
 ];
 
 export const experience: Role[] = [
   {
     company: "Salesforce",
-    title: "Senior Technical Consultant — Global Delivery Centre, MuleSoft",
+    title: "Senior Technical Consultant",
     period: "Jan 2024 — Present",
-    location: "Bengaluru, India",
-    highlights: [
-      "Integration architecture for Heineken across API-led and event-driven estates.",
-      "Built the agent fabric, MCP servers and IDE tooling that let agents operate the platform safely.",
-      "Internal enablement on agentic AI for integration teams.",
-    ],
   },
   {
     company: "Deloitte",
-    title: "Integration Consultant",
+    title: "Senior Technical Consultant",
     period: "May 2021 — Dec 2023",
-    location: "India",
-    highlights: [
-      "Delivered enterprise integration programmes across MuleSoft and adjacent platforms.",
-      "Owned design and delivery of API-led connectivity layers for large clients.",
-    ],
   },
   {
     company: "Accenture",
-    title: "Integration Developer",
+    title: "Application Development Analyst",
     period: "Jan 2017 — Apr 2021",
-    location: "India",
-    highlights: [
-      "Built and supported integration services for global enterprise clients.",
-      "Grew from development into design ownership across long-running programmes.",
-    ],
   },
 ];
 
 export const education: Education[] = [
   {
+    credential: "B.E. Computer Science",
     institution: "Sir M. Visvesvaraya Institute of Technology",
-    credential: "Bachelor of Engineering",
   },
-  { institution: "IIM Bangalore", credential: "Design Thinking" },
   {
+    credential: "Design Thinking",
+    institution: "Indian Institute of Management Bangalore",
+  },
+  {
+    credential: "Advanced AI & Emerging Tech (AIET)",
     institution: "IIT Hyderabad",
-    credential: "AI & Emerging Technologies",
+    period: "2025–2026",
   },
 ];
 
