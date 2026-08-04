@@ -13,6 +13,7 @@ export type Project = {
   title: string;
   summary: string;
   tags: string[];
+  period?: string;
   href?: string;
 };
 
@@ -75,6 +76,7 @@ export const about = {
     "I am a Senior Technical Consultant at Salesforce, in the Global Delivery Centre for MuleSoft, currently embedded with Heineken. That is nine-plus years into a career spent on integration architecture — the APIs, event flows and platform plumbing that hold a large organisation together.",
     "Much of that work has been multi-cloud: integrating Salesforce, SAP and ServiceNow, and putting delivery on rails with CI/CD through Azure DevOps and Jenkins, which cut manual effort by around 40%. Across those engagements I have held a 5/5 CSAT with zero escalations.",
     "The part I find most interesting right now is what happens when agents get access to that plumbing. A well-governed integration estate is, functionally, a catalogue of tools an agent can call — which turns integration architecture into agent architecture. Most of my recent work sits on that line: agent fabrics, MCP servers and IDE tooling.",
+    "Alongside delivery I run enablement — including a Catalyst session, \u201cStop Clicking, Start Conversing\u201d, demoing natural-language operations against the Anypoint Platform. GDC leadership nominated me as an AI Champion for embodying an AI-first mindset and applying Salesforce-approved AI tools to real problems.",
   ],
   writingNote: {
     prefix:
@@ -110,12 +112,18 @@ export const about = {
       items: [
         "MuleSoft Ambassador programme",
         "TrailGuide mentoring",
+        "Culture Guide Hub coordinator, Bangalore",
+        "Toastmasters International — Salesforce Bangalore Club, Level 1",
         "Writing at akattani.com/blog",
       ],
     },
     {
       title: "Recognition",
-      items: ["Innovation Gladiator (Dot of Fame)", "Trailhead Triple Star Ranger"],
+      items: [
+        "AI Champion nomination — GDC leadership",
+        "Innovation Gladiator (Dot of Fame)",
+        "Trailhead Triple Star Ranger",
+      ],
     },
     {
       title: "Languages",
@@ -127,9 +135,10 @@ export const about = {
 export const projects: Project[] = [
   {
     title: "Heineken Agent Fabric Network",
+    period: "2026",
     summary:
-      "An agent fabric network built on the Heineken engagement, connecting enterprise integrations to AI agents.",
-    tags: ["Agent Fabric", "MuleSoft", "Agentic AI"],
+      "Architected and set up an end-to-end MuleSoft Agent Network V2 (agent-network.yaml) for Heineken, with a Broker orchestrator, MCP Server and Ops Agent working in concert. It became the foundation for the award-winning hackathon solution and a live demo to Heineken leadership.",
+    tags: ["Agent Network V2", "MuleSoft", "MCP", "Orchestration"],
   },
   {
     title: "TrailBrewer",
@@ -138,30 +147,39 @@ export const projects: Project[] = [
     tags: ["Agent Fabric", "Omni Gateway", "A2A", "MCP", "Anypoint Platform"],
   },
   {
-    title: "Anypoint MCP Server",
+    title: "MuleSoft MCP Server POC — Heineken Leadership Demo",
     summary:
-      "A proof of concept exposing Anypoint Platform operations as Model Context Protocol tools.",
-    tags: ["MCP", "Anypoint Platform", "Agentic AI"],
+      "Delivered a fast-turnaround MCP Server proof-of-concept that directly enabled a successful executive demo, showcasing AI agents operating the MuleSoft Platform via natural language.",
+    tags: ["MCP", "MuleSoft", "Agentic AI"],
   },
   {
-    title: "Anypoint Studio Claude plugin",
-    summary: "A Claude plugin for Anypoint Studio, bringing an AI assistant into the IDE.",
-    tags: ["Anypoint Studio", "Developer Tools", "Claude"],
-  },
-  {
-    title: "Platform Vertex Agent",
-    summary: "A VS Code extension for working with the Anypoint Platform.",
-    tags: ["VS Code", "Anypoint Platform", "Developer Tools"],
-  },
-  {
-    title: "Azure Key Vault connector + certificate-rotation MCP",
+    title: "Anypoint Studio Claude Code Plugin",
     summary:
-      "A MuleSoft connector for Azure Key Vault, paired with an MCP server for certificate rotation.",
-    tags: ["MuleSoft", "Azure Key Vault", "MCP", "Security"],
+      "A plugin that brings a Claude Code chat panel directly into Anypoint Studio, giving Claude a structured semantic view of Mule projects — flows, connectors, RAML/OAS specs and MUnit suites. It supports diff-based edits, a live lint pass with quick-fixes, and ingests runtime failures and MUnit results for context-aware debugging. Currently in internal beta for macOS (Anypoint Studio 7.24).",
+    tags: ["Anypoint Studio", "Claude Code", "Developer Tools", "Internal Beta"],
   },
   {
-    title: "Solace messaging fix",
-    summary: "Diagnosed and resolved a Solace messaging failure affecting event flow.",
+    title: "GDC Platform Vertex Agent (PVA) — VS Code Extension",
+    summary:
+      "Contributed to the GDC Platform Vertex Agent initiative, publishing a new version of the PVA VS Code extension covering 60+ tools across 15+ use cases, usable with GitHub Copilot or Azure OpenAI model providers.",
+    tags: ["VS Code", "Anypoint Platform", "GitHub Copilot", "Azure OpenAI"],
+  },
+  {
+    title: "Azure Key Vault Certificate Downloader Connector",
+    summary:
+      "A Mule 4 connector published to the Heineken Exchange for downloading certificates from Azure Key Vault, with a supporting utility published on GitHub Pages, built as part of Heineken's certificate rotation POC work.",
+    tags: ["MuleSoft", "Azure Key Vault", "Mule 4 Connector"],
+  },
+  {
+    title: "Certificate Rotation MCP Workflow",
+    summary:
+      "Redesigned a Jira-coupled certificate rotation flow (download → unpack → validate → rotate) into a source-agnostic, security-hardened MCP workflow (stage → preflight → rotate → read-back verify), ensuring certificates, keys and passphrases never pass through the LLM.",
+    tags: ["MCP", "Security", "Automation"],
+  },
+  {
+    title: "Solace Reconnect-Interval Fix",
+    summary:
+      "Diagnosed and resolved a Solace reconnect-interval issue that had been creating a platform connectivity gap for Heineken.",
     tags: ["Solace", "Event-Driven"],
   },
 ];

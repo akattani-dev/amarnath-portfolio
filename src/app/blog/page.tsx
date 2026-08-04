@@ -32,18 +32,40 @@ export default async function BlogIndexPage() {
         </p>
       </header>
 
-      <div className="mt-10 flex flex-wrap gap-x-5 gap-y-2 border-y border-border py-4">
-        {CATEGORIES.map((category) => (
-          <span key={category} className="text-xs text-muted-foreground">
-            {category}
-          </span>
-        ))}
-      </div>
+      {posts.length > 0 && (
+        <div className="mt-10 flex flex-wrap gap-x-5 gap-y-2 border-y border-border py-4">
+          {CATEGORIES.map((category) => (
+            <span key={category} className="text-xs text-muted-foreground">
+              {category}
+            </span>
+          ))}
+        </div>
+      )}
 
       {posts.length === 0 ? (
-        <p className="mt-16 text-muted-foreground">
-          No posts published yet — first one is on the way.
-        </p>
+        <div className="mt-14 min-h-[38vh] border-t border-border pt-14">
+          <p className="font-display text-2xl tracking-tight text-ink">Writing soon</p>
+          <p className="mt-3 max-w-xl leading-[1.75] text-foreground/75">
+            The first pieces are being drafted, and will appear here as they land.
+          </p>
+          <p className="mt-8 text-sm text-muted-foreground">
+            In the meantime, take a look at{" "}
+            <Link
+              href="/#work"
+              className="text-brand underline decoration-brand/35 underline-offset-4 transition-colors hover:decoration-brand"
+            >
+              recent work
+            </Link>{" "}
+            or{" "}
+            <Link
+              href="/#contact"
+              className="text-brand underline decoration-brand/35 underline-offset-4 transition-colors hover:decoration-brand"
+            >
+              get in touch
+            </Link>
+            .
+          </p>
+        </div>
       ) : (
         <ul className="mt-4">
           {posts.map((post) => (

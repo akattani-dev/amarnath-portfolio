@@ -24,9 +24,16 @@ export function Work() {
               className="group border-b border-border"
             >
               <article className="grid gap-3 py-9 lg:grid-cols-[minmax(0,5rem)_minmax(0,1fr)] lg:gap-12">
-                <span className="font-mono text-xs text-brand lg:pt-1.5">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+                <div className="flex items-baseline gap-3 lg:flex-col lg:gap-1 lg:pt-1.5">
+                  <span className="font-mono text-xs text-brand">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  {project.period && (
+                    <span className="text-xs tracking-[0.12em] text-muted-foreground uppercase">
+                      {project.period}
+                    </span>
+                  )}
+                </div>
 
                 <div>
                   <h3 className="font-display text-xl tracking-tight text-ink transition-colors group-hover:text-brand sm:text-2xl">
