@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Sheet,
   SheetClose,
@@ -21,6 +22,8 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
+  // The hero paints on the fixed dark canvas, so above the fold the header
+  // reads against ink regardless of the active theme.
   const overHero = pathname === "/" && !scrolled;
 
   useEffect(() => {
@@ -33,85 +36,97 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "fixed top-0 z-50 w-full transition-colors duration-300",
+        "fixed top-0 z-50 w-full transition-colors duration-150",
         overHero
           ? "bg-transparent"
-          : "border-b border-border/70 bg-mist/85 backdrop-blur-md"
+          : "border-b border-border bg-background/85 backdrop-blur-md"
       )}
     >
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6 lg:px-10">
         <Link
           href="/"
           className={cn(
-            "font-display text-base tracking-tight transition-colors",
+            "font-display text-base tracking-tight transition-colors duration-150",
             overHero
               ? "text-mist hover:text-brand-bright"
-              : "text-ink hover:text-brand"
+              : "text-foreground hover:text-brand"
           )}
         >
           {site.name}
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
+        <div className="flex items-center gap-1">
+          <nav className="hidden items-center gap-8 pr-4 md:flex">
+            {nav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "text-sm transition-colors duration-150",
+                  overHero
+                    ? "text-mist/75 hover:text-mist"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <ThemeToggle
+            className={cn(
+              overHero
+                ? "text-mist/80 hover:bg-white/10 hover:text-mist"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          />
+
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger
+              aria-label="Open menu"
               className={cn(
-                "text-sm transition-colors",
+                "inline-flex size-9 items-center justify-center rounded-md transition-colors duration-150 md:hidden",
                 overHero
-                  ? "text-mist/75 hover:text-mist"
-                  : "text-muted-foreground hover:text-ink"
+                  ? "text-mist hover:bg-white/10"
+                  : "text-foreground hover:bg-muted"
               )}
             >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger
-            aria-label="Open menu"
-            className={cn(
-              "inline-flex size-9 items-center justify-center rounded-md transition-colors md:hidden",
-              overHero
-                ? "text-mist hover:bg-white/10"
-                : "text-ink hover:bg-mist-2"
-            )}
-          >
-            <Menu className="size-5" />
-          </SheetTrigger>
-          <SheetContent side="right" className="bg-mist">
-            <SheetHeader>
-              <SheetTitle className="font-display text-ink">{site.name}</SheetTitle>
-            </SheetHeader>
-            <nav className="flex flex-col gap-1 px-4">
-              {nav.map((item) => (
-                <SheetClose asChild key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="border-b border-border/60 py-3 font-display text-lg text-ink transition-colors hover:text-brand"
+              <Menu className="size-5" />
+            </SheetTrigger>
+            <SheetContent side="right" className="bg-background">
+              <SheetHeader>
+                <SheetTitle className="font-display text-foreground">
+                  {site.name}
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-1 px-4">
+                {nav.map((item) => (
+                  <SheetClose asChild key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="border-b border-border py-3 font-display text-lg text-foreground transition-colors duration-150 hover:text-brand"
+                    >
+                      {item.label}
+                    </Link>
+                  </SheetClose>
+                ))}
+              </nav>
+              <div className="mt-auto flex flex-wrap gap-x-5 gap-y-2 p-4 text-sm text-muted-foreground">
+                {socials.map((social) => (
+                  <a
+                    key={social.href}
+                    href={social.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="transition-colors duration-150 hover:text-brand"
                   >
-                    {item.label}
-                  </Link>
-                </SheetClose>
-              ))}
-            </nav>
-            <div className="mt-auto flex flex-wrap gap-x-5 gap-y-2 p-4 text-sm text-muted-foreground">
-              {socials.map((social) => (
-                <a
-                  key={social.href}
-                  href={social.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="transition-colors hover:text-brand"
-                >
-                  {social.label}
-                </a>
-              ))}
-            </div>
-          </SheetContent>
-        </Sheet>
+                    {social.label}
+                  </a>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   );

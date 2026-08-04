@@ -1,67 +1,64 @@
-import { Reveal } from "@/components/motion/reveal";
 import { SectionHeading } from "@/components/section-heading";
-import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { education, experience } from "@/content/site";
 
 export function Experience() {
   return (
-    <section id="experience" className="scroll-mt-16 border-b border-border">
-      <div className="mx-auto w-full max-w-6xl px-6 py-24 lg:px-10 lg:py-32">
-        <Reveal>
-          <SectionHeading index="03" label="Experience" title="Where I have worked" />
-        </Reveal>
+    <section id="experience" className="scroll-mt-20">
+      <SectionHeading index="03" label="Experience" title="Where I have worked" />
 
-        <ol className="mt-14 border-t border-border">
-          {experience.map((role, index) => (
-            <Reveal
-              as="li"
-              key={role.company}
-              delay={index * 0.05}
-              className="border-b border-border"
-            >
-              <div className="grid gap-2 py-8 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:items-baseline lg:gap-12">
-                <p className="text-sm tracking-[0.06em] text-muted-foreground">
-                  {role.period}
-                </p>
-
-                <div>
-                  <h3 className="font-display text-xl tracking-tight text-ink sm:text-2xl">
-                    {role.company}
-                  </h3>
-                  <p className="mt-1 text-sm text-brand">{role.title}</p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </ol>
-
-        <Reveal delay={0.1} className="mt-16">
-          <p className="text-xs tracking-[0.22em] text-muted-foreground uppercase">
+      <Tabs defaultValue="roles" className="mt-8 gap-5">
+        <TabsList variant="line" className="h-8 border-b border-border">
+          <TabsTrigger value="roles" className="px-3">
+            Roles
+          </TabsTrigger>
+          <TabsTrigger value="education" className="px-3">
             Education
-          </p>
-          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-0">
-            {education.map((entry, index) => (
-              <div key={entry.credential} className="flex items-center">
-                <div>
-                  <p className="text-ink">
-                    {entry.credential}
-                    {entry.period && (
-                      <span className="text-muted-foreground"> · {entry.period}</span>
-                    )}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="roles">
+          <ol>
+            {experience.map((role) => (
+              <li key={role.company} className="border-b border-border">
+                <div className="grid gap-1 py-4 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10">
+                  <p className="text-sm tracking-[0.06em] text-muted-foreground">
+                    {role.period}
                   </p>
-                  <p className="text-sm text-muted-foreground">{entry.institution}</p>
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <h3 className="font-display text-lg tracking-tight text-foreground">
+                      {role.company}
+                    </h3>
+                    <p className="text-sm text-brand">{role.title}</p>
+                  </div>
                 </div>
-                {index < education.length - 1 && (
-                  <Separator
-                    orientation="vertical"
-                    className="mx-8 hidden !h-10 sm:block"
-                  />
-                )}
-              </div>
+              </li>
             ))}
-          </div>
-        </Reveal>
-      </div>
+          </ol>
+        </TabsContent>
+
+        <TabsContent value="education">
+          <ol>
+            {education.map((entry) => (
+              <li key={entry.credential} className="border-b border-border">
+                <div className="grid gap-1 py-4 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10">
+                  <p className="text-sm tracking-[0.06em] text-muted-foreground">
+                    {entry.period ?? "—"}
+                  </p>
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <h3 className="font-display text-lg tracking-tight text-foreground">
+                      {entry.credential}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {entry.institution}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </TabsContent>
+      </Tabs>
     </section>
   );
 }

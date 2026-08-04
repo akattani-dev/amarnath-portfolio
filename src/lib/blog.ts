@@ -19,11 +19,14 @@ export type Frontmatter = {
   /** ISO date string. */
   date: string;
   category: Category;
+  /** Free-form labels shown alongside the category on the index. */
+  tags: string[];
   published: boolean;
 };
 
 export type PostMeta = Frontmatter & {
   slug: string;
+  readingMinutes: number;
 };
 
 export type Post = PostMeta & {
@@ -36,8 +39,16 @@ function isCategory(value: unknown): value is Category {
   return CATEGORIES.includes(value as Category);
 }
 
+function parseTags(slug: string, value: unknown): string[] {
+  if (value === undefined || value === null) return [];
+  if (!Array.isArray(value) || value.some((tag) => typeof tag !== "string")) {
+    throw new Error(`Post "${slug}" has tags that are not a list of strings.`);
+  }
+  return value as string[];
+}
+
 function parseFrontmatter(slug: string, data: Record<string, unknown>): Frontmatter {
-  const { title, description, date, category, published } = data;
+  const { title, description, date, category, tags, published } = data;
 
   if (typeof title !== "string" || title.length === 0) {
     throw new Error(`Post "${slug}" is missing a title.`);
@@ -59,6 +70,7 @@ function parseFrontmatter(slug: string, data: Record<string, unknown>): Frontmat
     description,
     date: date instanceof Date ? date.toISOString() : date,
     category,
+    tags: parseTags(slug, tags),
     published: published !== false,
   };
 }
@@ -83,7 +95,12 @@ export const getPost = cache(async (slug: string): Promise<Post | null> => {
   }
 
   const { data, content } = matter(raw);
-  return { slug, content, ...parseFrontmatter(slug, data) };
+  return {
+    slug,
+    content,
+    readingMinutes: readingMinutes(content),
+    ...parseFrontmatter(slug, data),
+  };
 });
 
 export const listPosts = cache(async (): Promise<PostMeta[]> => {
@@ -101,7 +118,9 @@ export const listPosts = cache(async (): Promise<PostMeta[]> => {
         description: post.description,
         date: post.date,
         category: post.category,
+        tags: post.tags,
         published: post.published,
+        readingMinutes: post.readingMinutes,
       } satisfies PostMeta;
     })
   );
@@ -120,7 +139,20 @@ export function formatPostDate(date: string): string {
   }).format(new Date(date));
 }
 
-export function readingTime(content: string): string {
+export function formatPostDateShort(date: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(date));
+}
+
+export function readingMinutes(content: string): number {
   const words = content.trim().split(/\s+/).length;
-  return `${Math.max(1, Math.round(words / 220))} min read`;
+  return Math.max(1, Math.round(words / 220));
+}
+
+export function formatReadingTime(minutes: number): string {
+  return `${minutes} min read`;
 }

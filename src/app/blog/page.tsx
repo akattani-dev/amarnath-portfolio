@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CalendarDays, Clock } from "lucide-react";
 
-import { CATEGORIES, formatPostDate, listPosts } from "@/lib/blog";
+import { Badge } from "@/components/ui/badge";
+import {
+  formatPostDateShort,
+  formatReadingTime,
+  listPosts,
+  type PostMeta,
+} from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -10,86 +17,121 @@ export const metadata: Metadata = {
   alternates: { canonical: "/blog" },
 };
 
+const VISIBLE_BADGES = 3;
+
+function PostRow({ post }: { post: PostMeta }) {
+  const labels = [post.category, ...post.tags];
+  const shown = labels.slice(0, VISIBLE_BADGES);
+  const overflow = labels.length - shown.length;
+
+  return (
+    <li>
+      <Link
+        href={`/blog/${post.slug}`}
+        className="group flex flex-col gap-3 p-5 transition-colors duration-150 hover:bg-muted/60 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
+      >
+        <div className="min-w-0 flex-1">
+          {/* Reserved heights keep row rhythm steady whether a title or excerpt
+              runs to one line or two. */}
+          <h2 className="min-h-[3rem] font-display text-lg leading-[1.35] tracking-tight text-foreground line-clamp-2 transition-colors duration-150 group-hover:text-brand">
+            {post.title}
+          </h2>
+          <p className="mt-1 min-h-[2.75rem] text-sm leading-[1.55] text-muted-foreground line-clamp-2">
+            {post.description}
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            {shown.map((label) => (
+              <Badge
+                key={label}
+                variant="secondary"
+                className="rounded-md px-2 py-0.5 text-[0.7rem] font-normal"
+              >
+                {label}
+              </Badge>
+            ))}
+            {overflow > 0 && (
+              <Badge
+                variant="outline"
+                className="rounded-md px-2 py-0.5 text-[0.7rem] font-normal text-muted-foreground"
+              >
+                +{overflow}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        <div className="flex shrink-0 flex-row gap-4 text-xs text-muted-foreground sm:w-32 sm:flex-col sm:items-end sm:gap-1.5 sm:pt-1">
+          <span className="flex items-center gap-1.5">
+            <CalendarDays className="size-3.5" aria-hidden />
+            <time dateTime={post.date}>{formatPostDateShort(post.date)}</time>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Clock className="size-3.5" aria-hidden />
+            {formatReadingTime(post.readingMinutes)}
+          </span>
+        </div>
+      </Link>
+    </li>
+  );
+}
+
 export default async function BlogIndexPage() {
   const posts = await listPosts();
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-6 pt-36 pb-24 lg:px-10 lg:pt-44 lg:pb-32">
-      <header className="max-w-2xl">
+    <div className="mx-auto w-full max-w-[44rem] px-6 pt-28 pb-20 lg:pt-32 lg:pb-24">
+      <header>
         <div className="flex items-center gap-3">
           <span className="h-px w-8 bg-brand" />
           <span className="text-xs tracking-[0.22em] text-muted-foreground uppercase">
             Writing
           </span>
         </div>
-        <h1 className="mt-6 font-display text-4xl leading-[1.05] tracking-[-0.02em] text-ink text-balance sm:text-5xl">
+        <h1 className="mt-4 font-display text-3xl leading-[1.1] tracking-[-0.02em] text-foreground text-balance sm:text-4xl">
           Notes from the line between integration and agents
         </h1>
-        <p className="mt-5 text-[1.05rem] leading-[1.75] text-foreground/80">
+        <p className="mt-4 leading-[1.7] text-muted-foreground">
           Short pieces on agentic AI, enterprise integration, developer tooling and
           how technical work is changing shape. Written in the open, versioned with
           the site.
         </p>
       </header>
 
-      {posts.length > 0 && (
-        <div className="mt-10 flex flex-wrap gap-x-5 gap-y-2 border-y border-border py-4">
-          {CATEGORIES.map((category) => (
-            <span key={category} className="text-xs text-muted-foreground">
-              {category}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {posts.length === 0 ? (
-        <div className="mt-14 min-h-[38vh] border-t border-border pt-14">
-          <p className="font-display text-2xl tracking-tight text-ink">Writing soon</p>
-          <p className="mt-3 max-w-xl leading-[1.75] text-foreground/75">
-            The first pieces are being drafted, and will appear here as they land.
-          </p>
-          <p className="mt-8 text-sm text-muted-foreground">
-            In the meantime, take a look at{" "}
-            <Link
-              href="/#work"
-              className="text-brand underline decoration-brand/35 underline-offset-4 transition-colors hover:decoration-brand"
-            >
-              recent work
-            </Link>{" "}
-            or{" "}
-            <Link
-              href="/#contact"
-              className="text-brand underline decoration-brand/35 underline-offset-4 transition-colors hover:decoration-brand"
-            >
-              get in touch
-            </Link>
-            .
-          </p>
-        </div>
-      ) : (
-        <ul className="mt-4">
-          {posts.map((post) => (
-            <li key={post.slug} className="border-b border-border">
-              <Link href={`/blog/${post.slug}`} className="group block py-8">
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                  <time dateTime={post.date}>{formatPostDate(post.date)}</time>
-                  <span className="h-3 w-px bg-border" />
-                  <span className="tracking-[0.1em] uppercase">{post.category}</span>
-                </div>
-                <h2 className="mt-3 font-display text-2xl leading-tight tracking-tight text-ink transition-colors group-hover:text-brand">
-                  {post.title}
-                </h2>
-                <p className="mt-2.5 max-w-2xl leading-[1.7] text-foreground/75">
-                  {post.description}
-                </p>
-                <span className="mt-4 inline-block text-sm text-brand opacity-0 transition-opacity group-hover:opacity-100">
-                  Read →
-                </span>
+      <div className="mt-10 overflow-hidden rounded-xl border border-border">
+        {posts.length === 0 ? (
+          <div className="p-8">
+            <p className="font-display text-xl tracking-tight text-foreground">
+              Writing soon
+            </p>
+            <p className="mt-2.5 leading-[1.7] text-muted-foreground">
+              The first pieces are being drafted, and will appear here as they land.
+            </p>
+            <p className="mt-6 text-sm text-muted-foreground">
+              In the meantime, take a look at{" "}
+              <Link
+                href="/#work"
+                className="text-brand underline decoration-brand/35 underline-offset-4 transition-colors duration-150 hover:decoration-brand"
+              >
+                recent work
+              </Link>{" "}
+              or{" "}
+              <Link
+                href="/#contact"
+                className="text-brand underline decoration-brand/35 underline-offset-4 transition-colors duration-150 hover:decoration-brand"
+              >
+                get in touch
               </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+              .
+            </p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-border">
+            {posts.map((post) => (
+              <PostRow key={post.slug} post={post} />
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
