@@ -146,7 +146,7 @@
   }
   ::selection {
     background: var(--brand);
-    color: #ffffff;
+    color: var(--background);
   }
 }
 
