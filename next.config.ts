@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    viewTransition: true,
+  },
   async redirects() {
     return [
       // Apex is the canonical host; www is attached to the project only so it

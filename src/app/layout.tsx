@@ -1,14 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Syne } from "next/font/google";
+import { ViewTransition } from "react";
+import { Analytics } from "@vercel/analytics/next";
+import { Manrope, Oswald } from "next/font/google";
 
+import { CursorReticle } from "@/components/cursor-reticle";
+import { ScrollProgress } from "@/components/scroll-progress";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { ThemeProvider } from "@/components/theme-provider";
 import { site } from "@/content/site";
+import { listPosts } from "@/lib/blog";
 
 import "./globals.css";
 
-const display = Syne({
+// Condensed grotesque: carries the comic display treatment in caps while still
+// having lowercase, which Bebas Neue doesn't — the same variable also styles
+// blog headings through .prose-ink.
+const display = Oswald({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
@@ -46,14 +53,12 @@ export const metadata: Metadata = {
     siteName: site.name,
     title: "Amarnath Kattani — Integration Architect & Agentic AI",
     description: site.description,
-    images: [{ url: "/images/hero.jpg", width: 980, height: 980, alt: site.name }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Amarnath Kattani — Integration Architect & Agentic AI",
     description: site.description,
     creator: "@AmarnathKattani",
-    images: ["/images/hero.jpg"],
   },
   robots: {
     index: true,
@@ -62,30 +67,35 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#030712" },
-  ],
+  themeColor: "#08090D",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const posts = await listPosts();
+
   return (
+    // `dark` is pinned, not toggled: the site has one theme. shadcn's
+    // primitives still ship `dark:` rules, so the class has to be here.
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      suppressHydrationWarning
-      className={`${display.variable} ${body.variable} h-full scroll-smooth antialiased`}
+      className={`dark ${display.variable} ${body.variable} h-full scroll-smooth antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <ThemeProvider>
-          <SiteHeader />
+        <ScrollProgress />
+        <ViewTransition>
+          <SiteHeader posts={posts} />
           <main className="flex-1">{children}</main>
           <SiteFooter />
-        </ThemeProvider>
+        </ViewTransition>
+        {/* Outside the ViewTransition: the cursor tracks the pointer, and a
+            route transition has no business animating it. */}
+        <CursorReticle />
+        <Analytics />
       </body>
     </html>
   );

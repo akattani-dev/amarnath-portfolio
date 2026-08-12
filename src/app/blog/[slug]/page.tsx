@@ -109,7 +109,11 @@ export default async function BlogPostPage({ params }: PostPageProps) {
         </div>
       </header>
 
-      <div className="prose prose-lg prose-ink mt-10 max-w-none prose-headings:font-display prose-headings:tracking-tight prose-p:text-[1.125rem] prose-p:leading-8 prose-li:text-[1.125rem] prose-li:leading-8">
+      {/* prose-invert covers the handful of --tw-prose-* variables .prose-ink
+          doesn't set (kbd, and its shadows), which would otherwise still be
+          carrying the plugin's light-theme values. .prose-ink is unlayered, so
+          it keeps winning for everything it does define. */}
+      <div className="prose prose-lg prose-ink prose-invert mt-10 max-w-none prose-headings:font-display prose-headings:tracking-tight prose-p:text-[1.125rem] prose-p:leading-8 prose-li:text-[1.125rem] prose-li:leading-8">
         <MDXRemote
           source={post.content}
           components={mdxComponents}

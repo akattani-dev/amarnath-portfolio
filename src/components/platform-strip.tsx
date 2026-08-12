@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import LogoLoop, { type LogoItem } from "@/components/LogoLoop";
+import { cn } from "@/lib/utils";
 
 type Platform = {
   name: string;
@@ -24,60 +25,89 @@ const PLATFORMS: Platform[] = [
 ];
 
 /**
- * Grey rather than brand colour: one value has to clear 3:1 against both the
- * white and the near-black canvas, and #6b7280 is the token already used for
- * muted text in the light theme.
+ * The muted-text token. A mark has to hold up against the near-black canvas
+ * and against the chip's own dark fill, and this is the value the rest of the
+ * secondary type on the page already uses.
  */
-const MARK_COLOR = "6b7280";
+const MARK_COLOR = "98a1af";
 
-function PlatformMark({ platform }: { platform: Platform }) {
+/**
+ * `.comic-tab` sets its hover colour through a custom property, which the
+ * `text-mist-2` utility below outranks — so each accent spells the hover
+ * colour out as a utility of its own.
+ */
+const ACCENTS = [
+  "hover:text-brand",
+  "comic-tab-magenta hover:text-brand-magenta",
+] as const;
+
+function PlatformMark({
+  platform,
+  accent,
+}: {
+  platform: Platform;
+  accent: string;
+}) {
   const [markFailed, setMarkFailed] = useState(false);
   const showMark = Boolean(platform.slug) && !markFailed;
 
   return (
-    // The font size is pinned because LogoLoop sets each item to
-    // `--logoloop-logoHeight`, which would otherwise render this at 20px.
-    <span className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-foreground/[0.025] px-4 py-2 text-[0.8125rem] leading-none font-medium tracking-tight whitespace-nowrap text-foreground/70">
-      {showMark && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={`https://cdn.simpleicons.org/${platform.slug}/${MARK_COLOR}`}
-          alt=""
-          width={16}
-          height={16}
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-          onError={() => setMarkFailed(true)}
-          className="size-4 shrink-0"
-        />
-      )}
-      {platform.name}
+    // The padded wrapper is load-bearing: LogoLoop's track is overflow-x-hidden,
+    // which resolves the block axis to `auto`, so an offset plate hanging past
+    // the chip would be clipped (and could raise a scrollbar) without it.
+    <span className="inline-flex p-1">
+      <span
+        className={cn(
+          "comic-tab border-ink-line bg-ink-2 px-3.5 py-2.5 text-[0.72rem] whitespace-nowrap text-mist-2 [--tab-x:3px] [--tab-y:3px]",
+          accent
+        )}
+      >
+        {showMark && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`https://cdn.simpleicons.org/${platform.slug}/${MARK_COLOR}`}
+            alt=""
+            width={16}
+            height={16}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+            onError={() => setMarkFailed(true)}
+            className="size-4 shrink-0"
+          />
+        )}
+        {platform.name}
+      </span>
     </span>
   );
 }
 
-const LOGOS: LogoItem[] = PLATFORMS.map((platform) => ({
-  node: <PlatformMark platform={platform} />,
+const LOGOS: LogoItem[] = PLATFORMS.map((platform, index) => ({
+  node: (
+    <PlatformMark
+      platform={platform}
+      accent={ACCENTS[index % ACCENTS.length]}
+    />
+  ),
   ariaLabel: platform.name,
 }));
 
 export function PlatformStrip() {
   return (
     // Deliberately unnamed: LogoLoop renders its own labelled region, and
-    // naming this too would nest two region landmarks.
-    <section className="border-y border-border py-9">
+    // naming this too would nest two region landmarks. No top border either —
+    // the stat strip above closes itself with one.
+    <section className="border-b border-ink-line bg-ink py-8">
       <LogoLoop
         logos={LOGOS}
-        speed={38}
+        speed={34}
         direction="left"
         logoHeight={20}
-        gap={20}
+        // Wide enough that a chip's offset plate never touches the next chip.
+        gap={28}
         pauseOnHover
         fadeOut
-        // The component's own auto colour is #0b0b0b in dark, which would seam
-        // against this canvas at #030712.
-        fadeOutColor="var(--background)"
+        fadeOutColor="var(--ink)"
         ariaLabel="Platforms I work with"
       />
     </section>

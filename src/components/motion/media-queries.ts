@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 const COARSE_POINTER_QUERY = "(pointer: coarse)";
+const FINE_POINTER_QUERY = "(pointer: fine)";
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 const subscribeToMedia = (query: string) => (onChange: () => void) => {
@@ -14,12 +15,16 @@ const subscribeToMedia = (query: string) => (onChange: () => void) => {
 // Hoisted so the subscription identity is stable across renders, otherwise
 // React tears down and re-establishes the listener on every pass.
 const subscribeToCoarsePointer = subscribeToMedia(COARSE_POINTER_QUERY);
+const subscribeToFinePointer = subscribeToMedia(FINE_POINTER_QUERY);
 const subscribeToReducedMotion = subscribeToMedia(REDUCED_MOTION_QUERY);
 
 const getCoarsePointerSnapshot = () =>
   "ontouchstart" in window ||
   navigator.maxTouchPoints > 0 ||
   window.matchMedia(COARSE_POINTER_QUERY).matches;
+
+const getFinePointerSnapshot = () =>
+  window.matchMedia(FINE_POINTER_QUERY).matches;
 
 const getReducedMotionSnapshot = () =>
   window.matchMedia(REDUCED_MOTION_QUERY).matches;
@@ -46,6 +51,19 @@ export function useCoarsePointer(): boolean {
   return useSyncExternalStore(
     subscribeToCoarsePointer,
     getCoarsePointerSnapshot,
+    getServerSnapshot
+  );
+}
+
+/**
+ * True when the *primary* pointer is a mouse or trackpad. Deliberately not
+ * `!useCoarsePointer()`: a laptop with a touchscreen reports touch support and
+ * a fine primary pointer at the same time, and it should still get the cursor.
+ */
+export function useFinePointer(): boolean {
+  return useSyncExternalStore(
+    subscribeToFinePointer,
+    getFinePointerSnapshot,
     getServerSnapshot
   );
 }

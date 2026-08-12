@@ -22,13 +22,18 @@ export type Role = {
   title: string;
   period: string;
   /**
-   * Simple Icons slug, resolved through cdn.simpleicons.org. No role sets one
-   * today: Simple Icons has dropped every enterprise mark used here over
-   * trademark, and a slug that 404s costs a failed request and a console error
-   * before the initial square takes over. Kept for self-hosted marks later.
+   * Local mark filename *with* its extension, under /public/logos, resolved to
+   * /logos/{mark}. Simple Icons dropped most enterprise marks used here over
+   * trademark, so this reads bundled assets rather than a CDN — and the
+   * extension lives in the value because those assets arrive in whatever
+   * format the company publishes. No mark means no bundled file exists, and
+   * CompanyMark falls back to the brand-filled initial square instead.
    */
-  slug?: string;
-  /** Brand hex. Colours the CDN mark, and fills the initial square when no slug exists. */
+  mark?: string;
+  /**
+   * Brand hex. Colours the misregistered plate behind the mark, and fills the
+   * initial-square fallback when no mark exists.
+   */
   brand?: string;
 };
 
@@ -47,6 +52,7 @@ export const site = {
   description:
     "Integration architect and agentic AI practitioner. Enterprise platforms by day; experiments and writing on how AI reshapes technical work.",
   email: "hello.akattani@gmail.com",
+  resumeUrl: "/resume.pdf",
 } as const;
 
 export const nav: NavItem[] = [
@@ -176,18 +182,21 @@ export const experience: Role[] = [
     company: "Salesforce",
     title: "Senior Technical Consultant",
     period: "Jan 2024 — Present",
+    mark: "salesforce.png",
     brand: "#00A1E0",
   },
   {
     company: "Deloitte",
     title: "Senior Technical Consultant",
     period: "May 2021 — Dec 2023",
+    mark: "deloitte.png",
     brand: "#86BC25",
   },
   {
     company: "Accenture",
     title: "Application Development Analyst",
     period: "Jan 2017 — Apr 2021",
+    mark: "accenture.png",
     brand: "#A100FF",
   },
 ];

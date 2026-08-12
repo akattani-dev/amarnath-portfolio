@@ -88,7 +88,8 @@ src/app/                # routes: /, /blog, /blog/[slug], sitemap, robots
 src/components/         # header, footer, sections/, motion/, ui/ (shadcn)
 src/content/site.ts     # all portfolio copy
 src/lib/blog.ts         # listPosts / getPost + frontmatter validation
-public/images/hero.jpg  # hero portrait
+public/images/           # hero-spiderverse.jpg (hero portrait)
+public/logos/            # company marks used by the experience timeline
 ```
 
 ## Notes

@@ -3,6 +3,9 @@
 @import "shadcn/tailwind.css";
 @plugin "@tailwindcss/typography";
 
+/* The site is dark-only — `.dark` is pinned on <html> in layout.tsx and never
+   toggled. The variant stays because shadcn's primitives ship `dark:` rules of
+   their own, and those have to keep matching. */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -13,12 +16,20 @@
 
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
   --color-ink-line: var(--ink-line);
   --color-mist: var(--mist);
   --color-mist-2: var(--mist-2);
+
   --color-brand: var(--brand);
   --color-brand-bright: var(--brand-bright);
   --color-brand-soft: var(--brand-soft);
+  --color-brand-magenta: var(--brand-magenta);
+  --color-brand-magenta-soft: var(--brand-magenta-soft);
+  --color-brand-red: var(--brand-red);
+  --color-brand-red-soft: var(--brand-red-soft);
+  --color-sage: var(--sage);
+  --color-sage-soft: var(--sage-soft);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -48,97 +59,101 @@
   --radius-4xl: calc(var(--radius) + 24px);
 }
 
-/* ---------------------------------------------------------------------------
-   CANVAS RAMP — fixed in both themes.
-   Only the hero and the footer paint on this ramp; they stay dark in light
-   mode by design. Everything else uses the semantic tokens below.
-   --------------------------------------------------------------------------- */
-:root {
-  --ink: #030712;
-  --ink-2: #111827;
-  --ink-line: #1f2937;
-  --mist: #f9fafb;
-  --mist-2: #e5e7eb;
+/* The travelling pulse on a diagram connector, as `animate-flow-x` /
+   `animate-flow-y`. Not `inline`, so the keyframes are emitted once and the
+   utility just references the variable — nothing in the value is element
+   scoped, and a caller's `animationDelay` still wins over the shorthand. */
+@theme {
+  --animate-flow-x: flow-x 2.4s linear infinite;
+  --animate-flow-y: flow-y 2.4s linear infinite;
+
+  @keyframes flow-x {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(250%);
+    }
+  }
+
+  @keyframes flow-y {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(250%);
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------------
-   NEUTRAL BASE — light
+   PALETTE — one dark ramp, three inks.
+
+   There is no light theme and no `.dark` override block: every token below is
+   the final value. `--ink*`/`--mist*` are the raw canvas ramp (hero, footer,
+   full-bleed panels paint straight onto it); the shadcn semantic aliases are
+   derived from that ramp so `Button`, `Badge`, `Sheet`, `Tabs`, `Command` and
+   `Dialog` keep working untouched.
+
+   Only the accent block introduces hue. Cyan is the primary interactive
+   colour; magenta is the second plate in every misregistration effect; red and
+   sage are deliberately sparing — red for alarm/emphasis edges, sage (sampled
+   from the hero portrait) for quiet organic fills.
    --------------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #030712;
-  --card: #ffffff;
-  --card-foreground: #030712;
-  --popover: #ffffff;
-  --popover-foreground: #030712;
-  --primary: #111827;
-  --primary-foreground: #f9fafb;
-  --secondary: #f3f4f6;
-  --secondary-foreground: #111827;
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
-  --accent: #f3f4f6;
-  --accent-foreground: #111827;
-  --destructive: #ef4444;
-  --border: #e5e7eb;
-  --input: #e5e7eb;
-  --radius: 0.5rem;
-}
+  /* Canvas ramp */
+  --ink: #08090d;
+  --ink-2: #111318;
+  --ink-3: #171a21;
+  --ink-line: #23262e;
+  --mist: #f4f6f8;
+  --mist-2: #98a1af;
 
-/* ---------------------------------------------------------------------------
-   NEUTRAL BASE — dark
-   --------------------------------------------------------------------------- */
-.dark {
-  --background: #030712;
-  --foreground: #f9fafb;
-  --card: #030712;
-  --card-foreground: #f9fafb;
-  --popover: #030712;
-  --popover-foreground: #f9fafb;
-  --primary: #f9fafb;
-  --primary-foreground: #111827;
-  --secondary: #1f2937;
-  --secondary-foreground: #f9fafb;
-  --muted: #1f2937;
-  --muted-foreground: #9ca3af;
-  --accent: #1f2937;
-  --accent-foreground: #f9fafb;
-  --destructive: #7f1d1d;
-  --border: #1f2937;
-  --input: #1f2937;
-}
+  /* Accent block */
+  --brand: #00e5ff;
+  --brand-bright: #7df3ff;
+  --brand-soft: #06242c;
+  --brand-magenta: #ff176b;
+  --brand-magenta-soft: #2b0a19;
+  --brand-red: #ff3b30;
+  --brand-red-soft: #2a0d0b;
+  --sage: #7e8c66;
+  --sage-soft: #1a1d16;
 
-/* ---------------------------------------------------------------------------
-   ACCENT BLOCK — the single deviation from a purely neutral palette.
-   Teal carries links, focus rings, section indices and small highlights.
+  /* The one curve every hover, lift and wipe in this file runs on. */
+  --ease-pop: cubic-bezier(0.22, 1, 0.36, 1);
 
-   To go fully neutral (matching tedawf.com exactly), change only this block:
-     --brand        -> var(--primary)      light / var(--foreground) dark
-     --brand-bright -> var(--mist)
-     --brand-soft   -> var(--muted)
-     --ring         -> var(--foreground)   light / #d1d5db dark
-   Nothing outside this block references a hue.
-   --------------------------------------------------------------------------- */
-:root {
-  --brand: #0b7a70;
-  --brand-bright: #45c3b5;
-  --brand-soft: #e2f0ed;
+  /* shadcn semantic aliases */
+  --background: var(--ink);
+  --foreground: var(--mist);
+  --card: var(--ink-2);
+  --card-foreground: var(--mist);
+  --popover: var(--ink-2);
+  --popover-foreground: var(--mist);
+  --primary: var(--brand);
+  --primary-foreground: #05070a;
+  --secondary: var(--ink-3);
+  --secondary-foreground: var(--mist);
+  --muted: var(--ink-3);
+  --muted-foreground: var(--mist-2);
+  --accent: #1b1f27;
+  --accent-foreground: var(--mist);
+  --destructive: var(--brand-red);
+  --border: var(--ink-line);
+  --input: #2a2e38;
   --ring: var(--brand);
-}
 
-.dark {
-  --brand: #45c3b5;
-  --brand-bright: #45c3b5;
-  --brand-soft: #10312e;
-  --ring: var(--brand);
+  /* Tight, so panels and chips read as printed plates rather than SaaS cards. */
+  --radius: 0.25rem;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/40;
+    @apply border-border;
   }
   html {
     @apply font-sans;
+    color-scheme: dark;
     -webkit-font-smoothing: antialiased;
   }
   body {
@@ -148,17 +163,642 @@
     background: var(--brand);
     color: var(--background);
   }
+  /* One cyan ring for the whole site, so no component has to spell one out.
+     Width and style have to be declared, not just a colour: Chrome's default
+     is `outline-style: auto`, which draws the platform ring and ignores
+     `outline-color` entirely. Base layer, so a component that wants a
+     different ring can still say so with a utility. */
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 4px;
+  }
 }
 
-/* Cool paper tooth over flat colour fields. Host element must be positioned. */
-.grain::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.4;
-  mix-blend-mode: soft-light;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+/* ---------------------------------------------------------------------------
+   COMIC UTILITIES — the shared visual language for every section.
+
+   All of these live in @layer components, so any Tailwind utility (bg-*,
+   border-*, p-*, transition-*, absolute…) applied alongside them wins. Tune
+   them through their custom properties rather than fighting the class.
+
+     .halftone         Ben-Day dot field behind content (::before overlay).
+                       Vars: --halftone-color --halftone-opacity
+                             --halftone-size --halftone-dot --halftone-mask
+                       Presets: .halftone-cyan .halftone-magenta
+                                .halftone-red .halftone-sage
+     .grain            Riso paper tooth over a colour field (::after overlay).
+                       Vars: --grain-opacity
+     .dot-grid         Sparse dot backdrop for full-bleed sections.
+                       Vars: --dot-color --dot-size
+     .panel-cut        Angled top-left / bottom-right corners.
+                       Vars: --cut. Clips box-shadow — use .panel-shadow.
+     .panel-shadow     Hard offset shadow that follows a clipped silhouette.
+                       Vars: --shadow-x --shadow-y --shadow-color
+     .halftone-reveal  Halftone hidden at rest, developed by a `.group`
+                       ancestor's hover / focus. Corner-anchored mask preset.
+     .misreg-frame     Misregistered plate borders: magenta down-right, cyan
+                       up-left, off a solid panel.
+                       Vars: --misreg-x --misreg-y --misreg-hover-x
+                             --misreg-hover-y --misreg-1 --misreg-2
+                             --misreg-3 --misreg-bg --misreg-border
+                             --misreg-width
+                       Add-ons: .misreg-frame-tri (third red plate),
+                                .misreg-frame-hover (interactive push)
+                       Presets: .misreg-frame-sm .misreg-frame-lg — set the
+                                resting *and* hover offsets together. Prefer
+                                these over `[--misreg-x:*]` on anything
+                                hoverable: a utility outranks the components
+                                layer, so it pins the plates open.
+     .rgb-offset       Static chromatic aberration on text.
+     .chromatic        Same offset, on hover / focus-visible / ancestor
+                       `.group` hover or focus.
+                       Both: --rgb-x --rgb-y --rgb-1 --rgb-2
+     .display-pop      Display face, uppercase, hard magenta+cyan drop offset.
+                       Vars: --pop-x --pop-y --pop-1 --pop-2
+     .display-outline  Hollow display type (stroke, no fill).
+                       Vars: --outline-w --outline-c
+     .comic-tab        Thick-border uppercase chip for nav items, buttons and
+                       labels. Lifts into its shadow on hover / focus /
+                       [aria-current="page"] / [data-active="true"].
+                       Vars: --tab-bg --tab-border --tab-shadow --tab-x --tab-y
+                             --tab-hover-border --tab-hover-color
+                       Presets: .comic-tab-solid .comic-tab-magenta
+                                .comic-tab-red
+     .comic-slash      Skewed cyan→magenta underline that wipes in on hover /
+                       focus-visible / [aria-current="page"] /
+                       [data-active="true"] / ancestor `.group` hover.
+     .plate-edge       The 2px cyan→magenta rule that closes the header and
+                       opens the footer. .plate-edge-reverse mirrors it.
+     .plate-mark       Skewed tick that opens a label row; colour comes from a
+                       bg-* utility or the row's own text colour.
+                       Preset: .plate-mark-sm (shorter, for nested labels)
+     .portrait-frame   Panel behind the hero portrait.
+     .project-card     Lift plus media zoom on hover.
+     .hero-rise        Above-the-fold entrance. Keyframes, not a motion
+     .hero-plate       primitive: the hero is the LCP surface and must never
+     .hero-fade        be stranded at opacity 0 waiting on hydration.
+                       Vars: --rise-delay
+     .reticle          The custom cursor. Mounted by CursorReticle for fine
+                       pointers only; every layer is pointer-events: none.
+
+   Pseudo-element budget: .halftone owns ::before; .grain and .comic-slash own
+   ::after — don't put .grain and .comic-slash on the same element.
+
+   Hover-only rules live behind `@media (hover: hover)`, matching how Tailwind
+   gates its own `hover:` variant — on touch a :hover state sticks after a tap
+   and burns the effect in. Keyboard equivalents (:focus-visible,
+   :focus-within) stay outside the gate.
+
+   Every transition and hover transform here is neutralised in the
+   prefers-reduced-motion block at the bottom of this file. New effects must be
+   registered there too.
+   --------------------------------------------------------------------------- */
+@layer components {
+  .halftone {
+    --halftone-color: var(--brand);
+    --halftone-opacity: 0.22;
+    --halftone-size: 9px;
+    --halftone-dot: 1.6px;
+    --halftone-mask: radial-gradient(
+      ellipse 75% 75% at 50% 50%,
+      #000 25%,
+      transparent 78%
+    );
+    position: relative;
+    /* Keeps the -1 layer above the host's own background instead of punching
+       through to whatever is behind it. */
+    isolation: isolate;
+  }
+
+  .halftone::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: var(--halftone-opacity);
+    background-image: radial-gradient(
+      var(--halftone-color) var(--halftone-dot),
+      transparent calc(var(--halftone-dot) + 0.6px)
+    );
+    background-size: var(--halftone-size) var(--halftone-size);
+    -webkit-mask-image: var(--halftone-mask);
+    mask-image: var(--halftone-mask);
+  }
+
+  .halftone-cyan {
+    --halftone-color: var(--brand);
+  }
+
+  .halftone-magenta {
+    --halftone-color: var(--brand-magenta);
+  }
+
+  .halftone-red {
+    --halftone-color: var(--brand-red);
+  }
+
+  .halftone-sage {
+    --halftone-color: var(--sage);
+    --halftone-opacity: 0.3;
+  }
+
+  /* Riso misprint tooth. Overlay rather than soft-light: on near-black, only
+     overlay leaves a visible speckle. */
+  .grain {
+    position: relative;
+  }
+
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--grain-opacity, 0.25);
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  }
+
+  .dot-grid {
+    --dot-color: color-mix(in oklab, var(--foreground), transparent 90%);
+    --dot-size: 22px;
+    background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+    background-size: var(--dot-size) var(--dot-size);
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      black 25%,
+      transparent 78%
+    );
+    mask-image: radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      black 25%,
+      transparent 78%
+    );
+  }
+
+  /* clip-path also clips box-shadow, so the offset plate has to come from a
+     filter, which follows the clipped silhouette. */
+  .panel-cut {
+    --cut: 20px;
+    clip-path: polygon(
+      var(--cut) 0,
+      100% 0,
+      100% calc(100% - var(--cut)),
+      calc(100% - var(--cut)) 100%,
+      0 100%,
+      0 var(--cut)
+    );
+  }
+
+  /* filter establishes a containing block — position:fixed descendants of a
+     .panel-shadow element will anchor to it rather than the viewport. */
+  .panel-shadow {
+    filter: drop-shadow(
+      var(--shadow-x, 6px) var(--shadow-y, 6px) 0
+        var(--shadow-color, var(--brand-magenta))
+    );
+  }
+
+  /* Two solid rectangles behind an opaque panel: only the offset edges show,
+     which is exactly how a misregistered print plate reads. */
+  .misreg-frame {
+    --misreg-x: 5px;
+    --misreg-y: 5px;
+    --misreg-1: var(--brand-magenta);
+    --misreg-2: var(--brand);
+    --misreg-3: var(--brand-red);
+    background-color: var(--misreg-bg, var(--card));
+    border: var(--misreg-width, 2px) solid var(--misreg-border, var(--ink-line));
+    box-shadow:
+      var(--misreg-x) var(--misreg-y) 0 0 var(--misreg-1),
+      calc(var(--misreg-x) * -1) calc(var(--misreg-y) * -1) 0 0 var(--misreg-2);
+    transition:
+      box-shadow 0.2s var(--ease-pop),
+      transform 0.2s var(--ease-pop),
+      border-color 0.2s var(--ease-pop);
+  }
+
+  .misreg-frame-tri {
+    box-shadow:
+      var(--misreg-x) var(--misreg-y) 0 0 var(--misreg-1),
+      calc(var(--misreg-x) * -1) calc(var(--misreg-y) * -1) 0 0 var(--misreg-2),
+      calc(var(--misreg-x) * 2.2) calc(var(--misreg-y) * 2.2) 0 0
+        var(--misreg-3);
+  }
+
+  /* Resting and hover offsets as a pair, so a caller never has to reach for
+     `[--misreg-x:*]` — which, being a utility, would outrank the hover rule
+     below and pin the plates at their resting spread. */
+  .misreg-frame-sm {
+    --misreg-x: 3px;
+    --misreg-y: 3px;
+    --misreg-hover-x: 7px;
+    --misreg-hover-y: 7px;
+  }
+
+  .misreg-frame-lg {
+    --misreg-x: 8px;
+    --misreg-y: 8px;
+    --misreg-hover-x: 12px;
+    --misreg-hover-y: 12px;
+  }
+
+  .misreg-frame-hover:focus-within {
+    --misreg-x: var(--misreg-hover-x, 8px);
+    --misreg-y: var(--misreg-hover-y, 8px);
+    transform: translate(-2px, -2px);
+  }
+
+  .rgb-offset,
+  .chromatic {
+    --rgb-x: 0.035em;
+    --rgb-y: 0em;
+    --rgb-1: var(--brand-magenta);
+    --rgb-2: var(--brand);
+    /* Composed here so every consumer below is a single reference. The var()s
+       resolve on the element, so a `[--rgb-x:*]` utility still lands. */
+    --rgb-shadow:
+      calc(var(--rgb-x) * -1) calc(var(--rgb-y) * -1) 0 var(--rgb-1),
+      var(--rgb-x) var(--rgb-y) 0 var(--rgb-2);
+  }
+
+  .rgb-offset {
+    text-shadow: var(--rgb-shadow);
+  }
+
+  .chromatic {
+    transition: text-shadow 0.18s var(--ease-pop);
+  }
+
+  .chromatic:focus-visible,
+  :where(.group:focus-within) .chromatic {
+    text-shadow: var(--rgb-shadow);
+  }
+
+  .display-pop {
+    --pop-x: 0.045em;
+    --pop-y: 0.035em;
+    --pop-1: var(--brand-magenta);
+    --pop-2: var(--brand);
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    line-height: 0.88;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+    text-shadow:
+      var(--pop-x) var(--pop-y) 0 var(--pop-1),
+      calc(var(--pop-x) * -1) calc(var(--pop-y) * -1) 0 var(--pop-2);
+  }
+
+  .display-outline {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: transparent;
+    text-shadow: none;
+    -webkit-text-stroke: var(--outline-w, 1.5px)
+      var(--outline-c, color-mix(in oklab, var(--foreground), transparent 55%));
+  }
+
+  .comic-tab {
+    --tab-x: 3px;
+    --tab-y: 3px;
+    --tab-shadow: var(--brand);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.95rem;
+    border: 2px solid
+      var(--tab-border, color-mix(in oklab, var(--foreground), transparent 74%));
+    background-color: var(--tab-bg, transparent);
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    box-shadow: var(--tab-x) var(--tab-y) 0 0 var(--tab-shadow);
+    transition:
+      transform 0.16s var(--ease-pop),
+      box-shadow 0.16s var(--ease-pop),
+      border-color 0.16s var(--ease-pop),
+      background-color 0.16s var(--ease-pop),
+      color 0.16s var(--ease-pop);
+  }
+
+  .comic-tab:hover,
+  .comic-tab:focus-visible,
+  .comic-tab[aria-current="page"],
+  .comic-tab[data-active="true"] {
+    transform: translate(-2px, -2px);
+    box-shadow: calc(var(--tab-x) + 2px) calc(var(--tab-y) + 2px) 0 0
+      var(--tab-shadow);
+    border-color: var(--tab-hover-border, var(--brand));
+    color: var(--tab-hover-color, var(--brand));
+  }
+
+  .comic-tab-magenta {
+    --tab-shadow: var(--brand-magenta);
+    --tab-hover-border: var(--brand-magenta);
+    --tab-hover-color: var(--brand-magenta);
+  }
+
+  .comic-tab-red {
+    --tab-shadow: var(--brand-red);
+    --tab-hover-border: var(--brand-red);
+    --tab-hover-color: var(--brand-red);
+  }
+
+  .comic-tab-solid {
+    --tab-bg: var(--brand);
+    --tab-border: var(--brand);
+    --tab-shadow: var(--brand-magenta);
+    --tab-hover-border: var(--brand-bright);
+    --tab-hover-color: var(--primary-foreground);
+    color: var(--primary-foreground);
+  }
+
+  .comic-slash {
+    position: relative;
+  }
+
+  .comic-slash::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.3em;
+    height: 2px;
+    background: linear-gradient(90deg, var(--brand), var(--brand-magenta));
+    transform: scaleX(0) skewX(-20deg);
+    transform-origin: left center;
+    transition: transform 0.18s var(--ease-pop);
+  }
+
+  .comic-slash:focus-visible::after,
+  .comic-slash[aria-current="page"]::after,
+  .comic-slash[data-active="true"]::after {
+    transform: scaleX(1) skewX(-20deg);
+  }
+
+  /* Halftone that develops under the pointer. Pair with .halftone on the same
+     element and mark the panel it belongs to `.group`. */
+  .halftone-reveal {
+    --halftone-mask: radial-gradient(
+      ellipse 120% 95% at 12% 100%,
+      #000 5%,
+      transparent 72%
+    );
+    opacity: 0;
+    transition: opacity 0.22s var(--ease-pop);
+  }
+
+  :where(.group:focus-within) .halftone-reveal {
+    opacity: 1;
+  }
+
+  .plate-edge {
+    height: 2px;
+    background: linear-gradient(
+      var(--plate-edge-angle, 90deg),
+      var(--brand),
+      var(--brand-magenta),
+      transparent
+    );
+  }
+
+  .plate-edge-reverse {
+    --plate-edge-angle: 270deg;
+  }
+
+  .plate-mark {
+    display: block;
+    flex: none;
+    height: var(--plate-mark-h, 0.875rem);
+    width: var(--plate-mark-w, 2px);
+    background-color: currentColor;
+    transform: skewX(-12deg);
+  }
+
+  .plate-mark-sm {
+    --plate-mark-h: 0.625rem;
+    --plate-mark-w: 0.25rem;
+  }
+
+  /* The one place hover is the whole point, kept together so the gate below is
+     a single block rather than a condition every component re-implements. */
+  @media (hover: hover) {
+    .misreg-frame-hover:hover {
+      --misreg-x: var(--misreg-hover-x, 8px);
+      --misreg-y: var(--misreg-hover-y, 8px);
+      transform: translate(-2px, -2px);
+    }
+
+    .chromatic:hover,
+    :where(.group:hover) .chromatic {
+      text-shadow: var(--rgb-shadow);
+    }
+
+    .comic-slash:hover::after,
+    :where(.group:hover) .comic-slash::after {
+      transform: scaleX(1) skewX(-20deg);
+    }
+
+    :where(.group:hover) .halftone-reveal {
+      opacity: 1;
+    }
+  }
+
+  /* Outer card of the double-nested hero frame. The inner radius is clipped in
+     markup so the image corners stay crisp against this one. */
+  .portrait-frame {
+    background: var(--ink-2);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--foreground), transparent 90%),
+      0 30px 80px -40px color-mix(in oklab, var(--brand), transparent 45%);
+  }
+
+  /* Apply .project-card to the card root; any nested img, or an element marked
+     .project-card__media, takes the zoom. */
+  .project-card {
+    transition:
+      transform 0.4s var(--ease-pop),
+      box-shadow 0.4s var(--ease-pop),
+      border-color 0.4s var(--ease-pop);
+  }
+
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--brand), transparent 70%),
+      0 24px 50px -30px color-mix(in oklab, var(--brand), transparent 40%);
+  }
+
+  .project-card :is(img, .project-card__media) {
+    transition: transform 0.5s var(--ease-pop);
+  }
+
+  .project-card:hover :is(img, .project-card__media) {
+    transform: scale(1.06);
+  }
+
+  /* ---- Hero entrance -----------------------------------------------------
+     Keyframes rather than a motion primitive, on purpose: the hero is the LCP
+     surface, so nothing above the fold should wait on hydration, and CSS
+     cannot strand content at opacity 0 the way an inline `initial` style does
+     when the animation never runs.
+
+     `backwards` rather than `both`: the drop-shadow plates are only needed
+     while they converge, and a filter left on a full-bleed image keeps a
+     compositing layer alive for the life of the page. */
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes hero-register {
+    from {
+      opacity: 0;
+      transform: translate3d(10px, 14px, 0) scale(0.96);
+      filter: drop-shadow(-18px -12px 0 var(--brand))
+        drop-shadow(18px 12px 0 var(--brand-magenta));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: drop-shadow(0 0 0 var(--brand))
+        drop-shadow(0 0 0 var(--brand-magenta));
+    }
+  }
+
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .hero-rise {
+    animation: hero-rise 340ms var(--ease-pop) var(--rise-delay, 0ms) backwards;
+  }
+
+  .hero-plate {
+    animation: hero-register 400ms var(--ease-pop) var(--rise-delay, 0ms)
+      backwards;
+  }
+
+  /* Opacity only: the floating labels carry a static rotation, and a keyframe
+     that touches transform would drop it until the animation ends. */
+  .hero-fade {
+    animation: hero-fade 260ms var(--ease-pop) var(--rise-delay, 0ms) backwards;
+  }
+
+  /* ---- Custom cursor -----------------------------------------------------
+     Mounted by CursorReticle, which only renders for a fine pointer with
+     motion allowed. Position is a transform written on rAF; nothing here
+     reads layout, and every layer is inert to the pointer. */
+  .reticle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s linear;
+    will-change: transform;
+  }
+
+  .reticle[data-visible="true"] {
+    opacity: 1;
+  }
+
+  .reticle > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Centring is `translate` so the wrapper's `transform` stays a single
+       tracked value and the children's own `transform` stays free for scale. */
+    translate: -50% -50%;
+    pointer-events: none;
+  }
+
+  .reticle__dot {
+    height: 6px;
+    width: 6px;
+    border-radius: 9999px;
+    background: var(--brand);
+    box-shadow: 0 0 10px -1px var(--brand);
+    transition: transform 0.18s var(--ease-pop);
+  }
+
+  .reticle__ring {
+    height: 34px;
+    width: 34px;
+    border-radius: 9999px;
+    border: 2px solid color-mix(in oklab, var(--brand), transparent 45%);
+    transform: scale(0.4);
+    opacity: 0;
+    transition:
+      transform 0.22s var(--ease-pop),
+      opacity 0.22s var(--ease-pop),
+      border-color 0.22s var(--ease-pop);
+  }
+
+  /* Four ticks around the ring, cyan on one axis and magenta on the other —
+     the same two plates every misregistration on the site prints. */
+  .reticle__ticks {
+    height: 48px;
+    width: 48px;
+    opacity: 0;
+    transform: scale(0.7);
+    background:
+      linear-gradient(var(--brand) 0 0) 50% 0 / 2px 7px no-repeat,
+      linear-gradient(var(--brand) 0 0) 50% 100% / 2px 7px no-repeat,
+      linear-gradient(var(--brand-magenta) 0 0) 0 50% / 7px 2px no-repeat,
+      linear-gradient(var(--brand-magenta) 0 0) 100% 50% / 7px 2px no-repeat;
+    transition:
+      transform 0.22s var(--ease-pop),
+      opacity 0.22s var(--ease-pop);
+  }
+
+  .reticle[data-target="true"] .reticle__dot {
+    transform: scale(0.5);
+  }
+
+  .reticle[data-target="true"] .reticle__ring {
+    transform: scale(1);
+    opacity: 1;
+    border-color: var(--brand);
+  }
+
+  .reticle[data-target="true"] .reticle__ticks {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   CHIP HOVER
+   Outline badges (certifications, tags) tint to the brand colour on hover.
+   Targets shadcn's own data attributes, so no component edit is needed.
+   --------------------------------------------------------------------------- */
+[data-slot="badge"][data-variant="outline"] {
+  transition:
+    border-color 0.2s var(--ease-pop),
+    color 0.2s var(--ease-pop);
+}
+
+[data-slot="badge"][data-variant="outline"]:hover {
+  border-color: var(--brand);
+  color: var(--brand);
 }
 
 /* ---------------------------------------------------------------------------
@@ -246,23 +886,11 @@
   padding-inline: 0.75rem;
 }
 
-/* sugar-high syntax tokens. Teal carries strings so the accent shows up in
+/* sugar-high syntax tokens. Cyan carries strings so the accent shows up in
    code the same way it does in prose links. */
 :root {
-  --sh-identifier: #354150;
-  --sh-keyword: #b5563f;
-  --sh-string: var(--brand);
-  --sh-class: #5b53b5;
-  --sh-property: #35688f;
-  --sh-entity: #4b7c7a;
-  --sh-jsxliterals: #8a5b84;
-  --sh-sign: #8996a3;
-  --sh-comment: #8a8a8a;
-}
-
-.dark {
   --sh-identifier: #e5e7eb;
-  --sh-keyword: #f0836f;
+  --sh-keyword: #ff5f8f;
   --sh-string: var(--brand);
   --sh-class: #8ea6ff;
   --sh-property: #7fb2e5;
@@ -299,111 +927,47 @@
 }
 
 /* ---------------------------------------------------------------------------
-   HERO DOT FIELD
-   The static stand-in for a WebGL backdrop: no canvas, no second colour
-   config, and it follows the theme because the dot is mixed from --foreground.
+   REDUCED MOTION — every comic utility, in one place.
+   State changes still happen (a hovered tab still turns cyan, a slash still
+   appears); they just land instantly instead of animating. Unlayered and
+   !important so it outranks both the components layer and any transition-*
+   utility a section applies on top.
    --------------------------------------------------------------------------- */
-.dot-grid {
-  background-image: radial-gradient(
-    color-mix(in oklab, var(--foreground), transparent 90%) 1px,
-    transparent 1px
-  );
-  background-size: 22px 22px;
-  -webkit-mask-image: radial-gradient(
-    ellipse 80% 60% at 50% 0%,
-    black 25%,
-    transparent 78%
-  );
-  mask-image: radial-gradient(
-    ellipse 80% 60% at 50% 0%,
-    black 25%,
-    transparent 78%
-  );
-}
-
-/* ---------------------------------------------------------------------------
-   PORTRAIT FRAME
-   Outer card of the double-nested frame. The inner radius is clipped in
-   markup so the image corners stay crisp against this one.
-   --------------------------------------------------------------------------- */
-.portrait-frame {
-  background: color-mix(in oklab, var(--foreground), transparent 97%);
-  box-shadow:
-    0 1px 2px color-mix(in oklab, var(--foreground), transparent 92%),
-    0 12px 32px -12px color-mix(in oklab, var(--foreground), transparent 82%);
-}
-
-/* ---------------------------------------------------------------------------
-   CARD HOVER
-   CSS-only: 4px lift, two-tier shadow and a 1.06 media push, all on the same
-   curve as the motion primitives. Apply .project-card to the card root; any
-   nested img, or an element marked .project-card__media, takes the zoom.
-   --------------------------------------------------------------------------- */
-.project-card {
-  transition:
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.project-card:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 2px 4px color-mix(in oklab, var(--foreground), transparent 92%),
-    0 18px 40px -16px color-mix(in oklab, var(--foreground), transparent 78%);
-}
-
-.project-card :is(img, .project-card__media) {
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.project-card:hover :is(img, .project-card__media) {
-  transform: scale(1.06);
-}
-
 @media (prefers-reduced-motion: reduce) {
+  .chromatic,
+  .comic-slash::after,
+  .comic-tab,
+  .halftone-reveal,
+  .misreg-frame,
   .project-card,
-  .project-card :is(img, .project-card__media) {
-    transition: none;
+  .project-card :is(img, .project-card__media),
+  [data-slot="badge"][data-variant="outline"] {
+    transition: none !important;
   }
 
+  .comic-tab:hover,
+  .comic-tab:focus-visible,
+  .comic-tab[aria-current="page"],
+  .comic-tab[data-active="true"],
+  .misreg-frame-hover:hover,
+  .misreg-frame-hover:focus-within,
   .project-card:hover,
   .project-card:hover :is(img, .project-card__media) {
-    transform: none;
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   THEME REVEAL
-   Cross-fades the document across a theme swap instead of cutting. Inert until
-   something calls document.startViewTransition around the next-themes
-   setTheme call — nothing does yet, so this is staged, not live.
-   --------------------------------------------------------------------------- */
-@media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.4s;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    mix-blend-mode: normal;
+    transform: none !important;
   }
 
-  ::view-transition-old(root) {
-    animation-name: theme-reveal-out;
+  /* The hero classes only ever animate *in*, so cancelling them leaves the
+     final state. A connector pulse has nowhere to land — stopped, it strands
+     a glow at the head of the track — so it is dropped instead; the dashed
+     line it travels is the diagram's actual content. */
+  .hero-rise,
+  .hero-plate,
+  .hero-fade {
+    animation: none !important;
   }
 
-  ::view-transition-new(root) {
-    animation-name: theme-reveal-in;
-  }
-}
-
-@keyframes theme-reveal-out {
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes theme-reveal-in {
-  from {
-    opacity: 0;
+  .flow-pulse {
+    animation: none !important;
+    opacity: 0 !important;
   }
 }
