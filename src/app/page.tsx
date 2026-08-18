@@ -4,6 +4,7 @@ import { Blog } from "@/components/sections/blog";
 import { Contact } from "@/components/sections/contact";
 import { Experience } from "@/components/sections/experience";
 import { Hero } from "@/components/sections/hero";
+import { OffTheClock } from "@/components/sections/off-the-clock";
 import { Work } from "@/components/sections/work";
 import { StatStrip } from "@/components/stat-strip";
 
@@ -24,6 +25,7 @@ export default function Home() {
         <Work />
         <Experience />
         <Blog />
+        <OffTheClock />
         <Contact />
       </div>
     </>

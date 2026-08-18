@@ -76,7 +76,7 @@ export function Contact() {
   return (
     <section id="contact" className="scroll-mt-20">
       <FadeIn>
-        <SectionHeading index="05" label="Contact" title="Let's build something" />
+        <SectionHeading index="06" label="Contact" title="Let's build something" />
       </FadeIn>
 
       <FadeIn delay={0.08} className="mt-10">

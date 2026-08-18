@@ -8,47 +8,6 @@ import { cn } from "@/lib/utils";
 
 const PORTRAIT_SIZES = "(min-width: 1024px) 430px, (min-width: 640px) 380px, 78vw";
 
-/**
- * Decorative print marks around the portrait — the stack, not a nav.
- *
- * The narrow-viewport ones hide with `max-*:hidden` rather than
- * `hidden sm:inline-flex`. Two reasons, both load-bearing: `cn()` runs
- * tailwind-merge, which drops the base `inline-flex` as soon as a bare `hidden`
- * follows it, and a label whose `display` is `none` in the base cascade only
- * gains its box once a media query matches — which is enough to leave its
- * entrance animation unstarted and the label stranded at `opacity: 0`. Keeping
- * `inline-flex` unconditional and subtracting it below a breakpoint avoids both.
- */
-const FLOATING_LABELS = [
-  { text: "MCP", position: "top-[13%] -left-2 rotate-[-4deg]", tone: "brand", delay: 300 },
-  {
-    text: "A2A",
-    position: "top-[30%] -right-2 rotate-[3deg] max-sm:hidden",
-    tone: "magenta",
-    delay: 340,
-  },
-  {
-    text: "API",
-    position: "bottom-[30%] -left-2 rotate-[2deg] max-sm:hidden",
-    tone: "sage",
-    delay: 380,
-  },
-  { text: "EVENTS", position: "bottom-[15%] -right-3 rotate-[-3deg]", tone: "brand", delay: 420 },
-  { text: "AGENTS", position: "-bottom-3 left-[9%] rotate-[-2deg]", tone: "magenta", delay: 460 },
-  {
-    text: "INTEGRATION",
-    position: "-top-3 right-[7%] rotate-[2deg] max-lg:hidden",
-    tone: "brand",
-    delay: 500,
-  },
-] as const;
-
-const LABEL_TONES = {
-  brand: "border-brand/45 text-brand",
-  magenta: "border-brand-magenta/45 text-brand-magenta",
-  sage: "border-sage/60 text-sage",
-} as const;
-
 /** Cyan lead, then the supporting plates. */
 const CTA_TONES = ["comic-tab-solid", "comic-tab-magenta", ""] as const;
 
@@ -162,7 +121,7 @@ export function Hero() {
           <HeroGhostDiagram className="pointer-events-none absolute top-1/2 left-1/2 -z-10 w-[150%] max-w-none -translate-x-1/2 -translate-y-1/2 text-brand/25" />
 
           <div
-            className="misreg-frame hero-plate relative overflow-hidden"
+            className="misreg-frame hero-plate glare relative overflow-hidden"
             style={
               {
                 "--misreg-x": "9px",
@@ -181,22 +140,6 @@ export function Hero() {
               sizes={PORTRAIT_SIZES}
               className="block w-full"
             />
-          </div>
-
-          <div aria-hidden className="pointer-events-none absolute inset-0">
-            {FLOATING_LABELS.map((label) => (
-              <span
-                key={label.text}
-                className={cn(
-                  "hero-fade absolute inline-flex border bg-ink/85 px-2 py-1 font-display text-[0.6rem] tracking-[0.22em] uppercase",
-                  LABEL_TONES[label.tone],
-                  label.position
-                )}
-                style={{ "--rise-delay": `${label.delay}ms` } as CSSProperties}
-              >
-                {label.text}
-              </span>
-            ))}
           </div>
         </div>
       </div>

@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, type CSSProperties } from "react";
-import Image from "next/image";
+import { useRef } from "react";
 import {
   motion,
   useScroll,
@@ -10,6 +9,7 @@ import {
   type MotionValue,
 } from "motion/react";
 
+import { LogoPlate } from "@/components/logo-plate";
 import { usePrefersReducedMotion } from "@/components/motion/media-queries";
 import type { Role } from "@/content/site";
 import { cn } from "@/lib/utils";
@@ -21,59 +21,6 @@ import { cn } from "@/lib/utils";
 const NODE_SIZE = "size-11";
 const RAIL_X = "left-[21px]";
 const ROW_INDENT = "pl-16 sm:pl-[4.5rem]";
-
-function initial(name: string) {
-  return name.trim().charAt(0).toUpperCase();
-}
-
-/**
- * A bundled mark on a light plate, falling back to a brand-filled square when
- * there is no local asset. The plate does all the contrast work: the marks are
- * third-party artwork used exactly as supplied — Deloitte's is near-black
- * wordmark type that would vanish straight onto the canvas — so none of them
- * is recoloured, inverted or cropped. What carries the comic language is the
- * substrate around the logo, not the logo.
- */
-function CompanyMark({ company, mark, brand }: Pick<Role, "company" | "mark" | "brand">) {
-  if (mark) {
-    return (
-      <span
-        className={cn(
-          NODE_SIZE,
-          "misreg-frame misreg-frame-sm flex items-center justify-center bg-mist"
-        )}
-        // The down-right plate takes the company's own hue; the up-left one
-        // stays cyan, so a node still reads as something threaded on the rail.
-        style={brand ? ({ "--misreg-1": brand } as CSSProperties) : undefined}
-      >
-        {/* 32px inside the plate's 40px content box. The sources each ship a
-            wide transparent margin of their own, so a smaller box leaves the
-            marks floating rather than sitting in their tile. */}
-        <Image
-          src={`/logos/${mark}`}
-          alt=""
-          width={32}
-          height={32}
-          className="size-8 object-contain"
-        />
-      </span>
-    );
-  }
-
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        NODE_SIZE,
-        "flex items-center justify-center border-2 font-display text-lg",
-        brand ? "text-white" : "border-mist bg-mist text-ink"
-      )}
-      style={brand ? { backgroundColor: brand, borderColor: brand } : undefined}
-    >
-      {initial(company)}
-    </span>
-  );
-}
 
 type TimelineRowProps = {
   role: Role;
@@ -101,7 +48,12 @@ function TimelineRow({
   return (
     <li className={cn("relative", ROW_INDENT, !last && "pb-10 sm:pb-12")}>
       <span className="absolute top-0 left-0 block">
-        <CompanyMark company={role.company} mark={role.mark} brand={role.brand} />
+        <LogoPlate
+          name={role.company}
+          mark={role.mark}
+          brand={role.brand}
+          className={NODE_SIZE}
+        />
         {/* Reuses the [data-motion-primitive] contract from globals.css: with no
             scripting, or under reduced motion, every node reads as reached.
 

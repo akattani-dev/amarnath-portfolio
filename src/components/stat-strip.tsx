@@ -20,7 +20,6 @@ type Stat = {
 const STATS: Stat[] = [
   { value: 9, suffix: "+", label: "Years in integration architecture" },
   { value: 8, label: "Certifications" },
-  { value: 1, suffix: "st", label: "Of nine teams at the hackathon" },
 ];
 
 const ACCENTS = [
@@ -119,7 +118,7 @@ export function StatStrip() {
         {/* FadeIn is the per-item wrapper div itself: a dl allows one div around
             each dt/dd pair, not two. Reversing it visually keeps the number on
             top while the markup stays in the order the spec wants. */}
-        <dl className="mt-9 grid gap-10 sm:grid-cols-3 sm:gap-0">
+        <dl className="mt-9 grid gap-10 sm:grid-cols-2 sm:gap-0">
           {STATS.map((stat, index) => (
             <StatFigure key={stat.label} stat={stat} index={index} />
           ))}

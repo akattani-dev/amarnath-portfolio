@@ -5,6 +5,12 @@ type SectionHeadingProps = {
   label: string;
   title: string;
   className?: string;
+  /**
+   * The home page stacks six of these under the hero's own `h1`, so `h2` is
+   * the default. `/blog` renders this chrome as its page title instead, and
+   * passes `h1` so the route is not left without one.
+   */
+  as?: "h1" | "h2";
 };
 
 /**
@@ -18,6 +24,7 @@ export function SectionHeading({
   label,
   title,
   className,
+  as: Title = "h2",
 }: SectionHeadingProps) {
   return (
     <div className={cn("relative max-w-3xl", className)}>
@@ -44,9 +51,9 @@ export function SectionHeading({
         />
       </div>
 
-      <h2 className="display-pop relative mt-4 text-[clamp(1.7rem,3.4vw,2.6rem)] leading-[0.95] text-balance text-foreground [--pop-x:0.03em] [--pop-y:0.024em]">
+      <Title className="display-pop relative mt-4 text-[clamp(1.7rem,3.4vw,2.6rem)] leading-[0.95] text-balance text-foreground [--pop-x:0.03em] [--pop-y:0.024em]">
         {title}
-      </h2>
+      </Title>
     </div>
   );
 }

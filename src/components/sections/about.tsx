@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+import {
+  AGENT_INTEGRATION_FLOW,
+  ArchitectureDiagram,
+} from "@/components/architecture-diagram";
 import { FadeIn } from "@/components/motion/fade-in";
 import { SectionHeading } from "@/components/section-heading";
 import { Badge } from "@/components/ui/badge";
@@ -188,13 +192,22 @@ export function About() {
         </FadeIn>
       </div>
 
-      <FadeIn delay={0.16} className="mt-12">
+      {/* The paragraph above calls a governed estate a catalogue of tools an
+          agent can call; this is that sentence drawn. It sits under the
+          two-column block rather than inside the reading column because five
+          nodes only line up as a row once the container clears 36rem, and the
+          copy column is capped well below that. */}
+      <FadeIn delay={0.16} className="mt-10 lg:mt-12">
+        <ArchitectureDiagram {...AGENT_INTEGRATION_FLOW} />
+      </FadeIn>
+
+      <FadeIn delay={0.2} className="mt-12">
         <KeywordBand />
 
         <div className="border-t border-ink-line pt-6">
           <div className="flex items-center gap-3">
             <h3 className="font-display text-xs tracking-[0.28em] text-mist-2 uppercase">
-              Focus &amp; community
+              Focus &amp; recognition
             </h3>
             <span
               aria-hidden

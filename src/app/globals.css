@@ -234,15 +234,21 @@
                        Preset: .plate-mark-sm (shorter, for nested labels)
      .portrait-frame   Panel behind the hero portrait.
      .project-card     Lift plus media zoom on hover.
+     .glare            Band of light raked diagonally across a plate on hover.
+                       Dropped, not frozen, under reduced motion: a stationary
+                       highlight reads as a rendering fault rather than a state.
+                       Vars: --glare-tint --glare-angle --glare-size
+                             --glare-duration
      .hero-rise        Above-the-fold entrance. Keyframes, not a motion
      .hero-plate       primitive: the hero is the LCP surface and must never
-     .hero-fade        be stranded at opacity 0 waiting on hydration.
+                       be stranded at opacity 0 waiting on hydration.
                        Vars: --rise-delay
      .reticle          The custom cursor. Mounted by CursorReticle for fine
                        pointers only; every layer is pointer-events: none.
 
-   Pseudo-element budget: .halftone owns ::before; .grain and .comic-slash own
-   ::after — don't put .grain and .comic-slash on the same element.
+   Pseudo-element budget: .halftone and .glare own ::before; .grain and
+   .comic-slash own ::after — don't put .grain and .comic-slash on the same
+   element, or .halftone and .glare.
 
    Hover-only rules live behind `@media (hover: hover)`, matching how Tailwind
    gates its own `hover:` variant — on touch a :hover state sticks after a tap
@@ -642,6 +648,48 @@
     transform: scale(1.06);
   }
 
+  /* ---- Glare -------------------------------------------------------------
+     A band of light raked diagonally across a plate on hover — the sheen off
+     a printed page tilted under a lamp.
+
+     The band is one oversized gradient layer parked off-corner and moved to
+     the opposite corner; sliding a background-position keeps the whole effect
+     on the compositor with no scripting behind it. Interpolating the stops in
+     oklab matters here: fading a near-white band out through sRGB's
+     `transparent` drags it through grey and dirties both edges. */
+  .glare {
+    --glare-tint: color-mix(in oklab, var(--mist), transparent 62%);
+    --glare-angle: -45deg;
+    --glare-size: 250%;
+    --glare-duration: 650ms;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glare::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: linear-gradient(
+      var(--glare-angle) in oklab,
+      transparent 60%,
+      var(--glare-tint) 70%,
+      transparent 85%
+    );
+    background-repeat: no-repeat;
+    background-size: var(--glare-size) var(--glare-size);
+    background-position: -100% -100%;
+    transition: background-position var(--glare-duration) ease;
+  }
+
+  @media (hover: hover) {
+    .glare:hover::before {
+      background-position: 100% 100%;
+    }
+  }
+
   /* ---- Hero entrance -----------------------------------------------------
      Keyframes rather than a motion primitive, on purpose: the hero is the LCP
      surface, so nothing above the fold should wait on hydration, and CSS
@@ -677,15 +725,6 @@
     }
   }
 
-  @keyframes hero-fade {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
   .hero-rise {
     animation: hero-rise 340ms var(--ease-pop) var(--rise-delay, 0ms) backwards;
   }
@@ -693,12 +732,6 @@
   .hero-plate {
     animation: hero-register 400ms var(--ease-pop) var(--rise-delay, 0ms)
       backwards;
-  }
-
-  /* Opacity only: the floating labels carry a static rotation, and a keyframe
-     that touches transform would drop it until the animation ends. */
-  .hero-fade {
-    animation: hero-fade 260ms var(--ease-pop) var(--rise-delay, 0ms) backwards;
   }
 
   /* ---- Custom cursor -----------------------------------------------------
@@ -961,9 +994,16 @@
      a glow at the head of the track — so it is dropped instead; the dashed
      line it travels is the diagram's actual content. */
   .hero-rise,
-  .hero-plate,
-  .hero-fade {
+  .hero-plate {
     animation: none !important;
+  }
+
+  /* Same reasoning as .flow-pulse: a glare is the travel, not a state. Landing
+     it instantly would burn a stripe across the portrait that reads as a
+     rendering fault, so it is dropped rather than frozen. */
+  .glare::before {
+    opacity: 0 !important;
+    transition: none !important;
   }
 
   .flow-pulse {

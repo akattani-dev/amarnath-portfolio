@@ -10,10 +10,10 @@ import type { Project } from "@/content/site";
 import { cn } from "@/lib/utils";
 
 /**
- * One custom property drives the whole panel — accent edge, label, the
- * misregistered plate, the halftone and the hover border all read
- * `--pp-accent`. Red lands once in a seven-panel wall, which is as sparing as
- * the token asks for.
+ * One custom property drives the whole panel — accent edge, label, link tab,
+ * the misregistered plate, the halftone and the hover border all read
+ * `--pp-accent`. The wall is two panels deep, so only cyan and magenta print
+ * today; sage and red stay in the cycle for whatever lands next.
  */
 const ACCENTS = [
   // The second plate defaults to cyan, so the cyan panel swaps it for magenta
@@ -24,8 +24,15 @@ const ACCENTS = [
   "[--pp-accent:var(--brand-red)]",
 ] as const;
 
-/** Degrees of tilt at the far corner. Past ~5° the copy starts to swim. */
-const MAX_TILT = 3.5;
+/**
+ * Degrees of tilt at the far corner. Deliberately small: the 3.5° that read as
+ * playful on a card-sized panel read as a wobble across a full-width one.
+ */
+const MAX_TILT = 1.5;
+
+/** Takes the panel's accent rather than the tab's default cyan. */
+const LINK_TAB =
+  "comic-tab mt-6 [--tab-shadow:var(--pp-accent)] [--tab-hover-border:var(--pp-accent)] [--tab-hover-color:var(--pp-accent)]";
 
 type ProjectPanelProps = {
   project: Project;
@@ -34,8 +41,8 @@ type ProjectPanelProps = {
 };
 
 /**
- * A project as a printed plate: thick accent edge, misregistered borders, and
- * a halftone field that develops under the cursor.
+ * A project as a full-width printed plate: thick accent edge, misregistered
+ * borders, and a halftone field that develops under the cursor.
  *
  * The tilt is written straight to `style.transform` on pointer move — no state,
  * so hovering never costs a React render — and is skipped for coarse pointers
@@ -77,13 +84,13 @@ export function ProjectPanel({ project, index }: ProjectPanelProps) {
           // `group` is what wires the halftone and the title to the panel's
           // own hover — both effects are shared classes from globals.css, and
           // that is the hook they listen on.
-          "misreg-frame misreg-frame-sm misreg-frame-hover group relative isolate flex h-full flex-col border-ink-line bg-ink-2 p-5 [--misreg-1:var(--pp-accent)] hover:border-[var(--pp-accent)] focus-within:border-[var(--pp-accent)]",
+          "misreg-frame misreg-frame-sm misreg-frame-hover group relative isolate border-ink-line bg-ink-2 p-5 [--misreg-1:var(--pp-accent)] hover:border-[var(--pp-accent)] focus-within:border-[var(--pp-accent)] sm:p-7",
           ACCENTS[index % ACCENTS.length]
         )}
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-[3px] bg-[var(--pp-accent)]"
+          className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-[var(--pp-accent)]"
         />
         <span
           aria-hidden
@@ -99,32 +106,44 @@ export function ProjectPanel({ project, index }: ProjectPanelProps) {
           )}
         </div>
 
-        <h3 className="chromatic mt-3.5 font-display text-[1.0625rem] leading-[1.25] tracking-tight text-mist [--rgb-x:0.03em]">
-          {project.href ? (
-            // Stretched hit area: the whole panel becomes the link without
-            // wrapping the summary and tags in an anchor.
-            <a href={project.href} className="after:absolute after:inset-0">
+        {/* Title and copy split editorially across the panel's width. */}
+        <div className="mt-6 grid gap-7 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-12">
+          <div>
+            <h3 className="chromatic font-display text-[clamp(1.5rem,3vw,2.125rem)] leading-[1.1] tracking-tight text-balance text-mist [--rgb-x:0.03em]">
               {project.title}
-            </a>
-          ) : (
-            project.title
-          )}
-        </h3>
+            </h3>
+            <span
+              aria-hidden
+              className="mt-5 block h-[3px] w-24 bg-gradient-to-r from-[var(--pp-accent)] to-transparent"
+            />
+          </div>
 
-        <p className="mt-2.5 text-[0.875rem] leading-[1.6] text-foreground/75">
-          {project.summary}
-        </p>
+          <div>
+            <p className="max-w-[58ch] text-[1.0625rem] leading-[1.6] text-foreground/80">
+              {project.summary}
+            </p>
 
-        <ul className="mt-auto flex flex-wrap gap-1.5 pt-5">
-          {project.tags.map((tag) => (
-            <li
-              key={tag}
-              className="border border-ink-line px-1.5 py-[3px] font-mono text-[0.625rem] leading-none tracking-[0.06em] text-mist-2 uppercase"
-            >
-              {tag}
-            </li>
-          ))}
-        </ul>
+            <ul className="mt-5 flex flex-wrap gap-1.5">
+              {project.tags.map((tag) => (
+                <li
+                  key={tag}
+                  className="border border-ink-line px-2 py-1 font-mono text-[0.625rem] leading-none tracking-[0.06em] text-mist-2 uppercase"
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+
+            {/* An explicit tab rather than the stretched hit area a card-sized
+                panel used: at this width that overlay would turn the whole
+                plate into one link. */}
+            {project.href && (
+              <a href={project.href} className={LINK_TAB}>
+                {project.linkLabel ?? "View project"}
+              </a>
+            )}
+          </div>
+        </div>
       </article>
     </li>
   );

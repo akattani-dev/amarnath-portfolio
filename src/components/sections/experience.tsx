@@ -31,7 +31,7 @@ export function Experience() {
               {/* Sage: the quiet plate, so education reads as context rather
                   than as another cyan data node. */}
               <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] bg-sage" />
-              <p className="font-display text-[0.9375rem] leading-tight tracking-tight text-mist">
+              <p className="mt-2 font-display text-[0.9375rem] leading-tight tracking-tight text-mist">
                 {entry.institution}
               </p>
               <p className="mt-2 text-[0.8125rem] leading-5 text-foreground/75">
